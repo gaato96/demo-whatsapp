@@ -1,65 +1,224 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import { BusinessConfig, Booking, Order, Product } from '@/types';
+import { DEFAULT_CONFIG, DEFAULT_INVENTORY } from '@/lib/constants';
+import ConfigPanel from '@/components/ConfigPanel';
+import ChatSimulator from '@/components/ChatSimulator';
+import OwnerDashboard from '@/components/OwnerDashboard';
 
 export default function Home() {
+  const [config, setConfig] = useState<BusinessConfig>(DEFAULT_CONFIG);
+  const [apiKey, setApiKey] = useState('');
+  const [activeTab, setActiveTab] = useState<'config' | 'chat' | 'dashboard'>('config');
+  const [showOwnerDashboard, setShowOwnerDashboard] = useState(false);
+
+  // Shared states for the visual CRM simulation
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [inventory, setInventory] = useState<Product[]>(DEFAULT_INVENTORY);
+
+  // State handlers
+  const handleAddBooking = (newBooking: Omit<Booking, 'id' | 'createdAt' | 'status'>) => {
+    const booking: Booking = {
+      ...newBooking,
+      id: `book-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      status: 'pending',
+      createdAt: new Date(),
+    };
+    setBookings(prev => [booking, ...prev]);
+  };
+
+  const handleAddOrder = (newOrder: Omit<Order, 'id' | 'createdAt' | 'status' | 'paymentStatus'>) => {
+    // Determine payment status based on payment method
+    const paymentStatus: 'paid' | 'pending_payment' = 
+      newOrder.paymentMethod?.toLowerCase() === 'efectivo' || newOrder.paymentMethod?.toLowerCase() === 'transferencia'
+        ? 'pending_payment'
+        : 'paid';
+
+    const order: Order = {
+      ...newOrder,
+      id: `ord-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      status: 'confirmed',
+      paymentStatus,
+      createdAt: new Date(),
+    };
+    setOrders(prev => [order, ...prev]);
+
+    // Update inventory stock based on the order
+    setInventory(prevInventory => {
+      return prevInventory.map(prod => {
+        const orderItem = newOrder.items.find(item => item.productId === prod.id);
+        if (orderItem) {
+          const newStock = Math.max(0, prod.stock - orderItem.quantity);
+          return { ...prod, stock: newStock };
+        }
+        return prod;
+      });
+    });
+  };
+
+  const handleUpdateBookingStatus = (id: string, status: 'confirmed' | 'cancelled') => {
+    setBookings(prev =>
+      prev.map(b => (b.id === id ? { ...b, status } : b))
+    );
+  };
+
+  const handleUpdateOrderStatus = (id: string, status: 'delivered' | 'cancelled') => {
+    setOrders(prev =>
+      prev.map(o => (o.id === id ? { ...o, status } : o))
+    );
+  };
+
+  const handleUpdateOrderPayment = (id: string, paymentStatus: 'paid' | 'pending_payment') => {
+    setOrders(prev =>
+      prev.map(o => (o.id === id ? { ...o, paymentStatus } : o))
+    );
+  };
+
+  // Confirms payment on the most recent pending_payment order (triggered by bot action)
+  const handleConfirmPayment = () => {
+    setOrders(prev => {
+      const idx = prev.findIndex(o => o.paymentStatus === 'pending_payment' && o.status !== 'cancelled');
+      if (idx === -1) return prev;
+      const updated = [...prev];
+      updated[idx] = { ...updated[idx], paymentStatus: 'paid' };
+      return updated;
+    });
+  };
+
+  const handleUpdateInventory = (updatedInventory: Product[]) => {
+    setInventory(updatedInventory);
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] relative">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#00A884]/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-[#075E54]/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#00A884]/5 rounded-full blur-[100px]"></div>
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 flex flex-col h-screen">
+        {/* Top Bar */}
+        <header className="flex items-center justify-between px-6 py-4 border-b border-white/5">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00A884] to-[#075E54] flex items-center justify-center shadow-lg shadow-[#00A884]/20">
+              <span className="text-xl">🤖</span>
+            </div>
+            <div>
+              <h1 className="text-white font-bold text-lg leading-tight">Demo Agente IA WhatsApp</h1>
+              <p className="text-white/40 text-xs">Simulador interactivo de bot inteligente</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            {/* Owner CRM Control Switch */}
+            <button
+              onClick={() => setShowOwnerDashboard(!showOwnerDashboard)}
+              className={`hidden md:flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
+                showOwnerDashboard
+                  ? 'bg-blue-600/20 text-blue-400 border-blue-500/40 hover:bg-blue-600/30'
+                  : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10 hover:text-white'
+              }`}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+              <span>📊</span> {showOwnerDashboard ? 'Ocultar Control de Negocio' : 'Ver Control de Negocio (CRM)'}
+            </button>
+
+            <span className="text-xs text-white/30 hidden sm:block">Powered by</span>
+            <div className="flex items-center gap-1.5 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-3 py-1.5">
+              <span className="text-sm">✨</span>
+              <span className="text-xs font-medium bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                Google Gemini 2.5
+              </span>
+            </div>
+          </div>
+        </header>
+
+        {/* Mobile Tab Toggle */}
+        <div className="flex xl:hidden px-4 py-3 gap-2">
+          <button
+            onClick={() => setActiveTab('config')}
+            className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
+              activeTab === 'config'
+                ? 'bg-[#00A884] text-white shadow-lg'
+                : 'bg-white/5 text-white/50 hover:text-white/70'
+            }`}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            ⚙️ Configuración
+          </button>
+          <button
+            onClick={() => setActiveTab('chat')}
+            className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
+              activeTab === 'chat'
+                ? 'bg-[#00A884] text-white shadow-lg'
+                : 'bg-white/5 text-white/50 hover:text-white/70'
+            }`}
+          >
+            💬 Chat WhatsApp
+          </button>
+          <button
+            onClick={() => setActiveTab('dashboard')}
+            className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
+              activeTab === 'dashboard'
+                ? 'bg-[#00A884] text-white shadow-lg'
+                : 'bg-white/5 text-white/50 hover:text-white/70'
+            }`}
+          >
+            📊 Panel Dueño
+          </button>
+        </div>
+
+        {/* Conditional Layout based on showOwnerDashboard */}
+        <div className="flex-1 flex gap-4 p-4 overflow-hidden">
+          
+          {/* Column 1: Config Panel (Left) */}
+          <div className={`xl:w-[28%] xl:min-w-[340px] xl:max-w-[420px] flex-shrink-0 rounded-2xl border border-white/10 overflow-hidden ${
+            activeTab === 'config' ? 'flex flex-col w-full' : 'hidden xl:flex xl:flex-col'
+          }`}>
+            <ConfigPanel
+              onConfigChange={setConfig}
+              onApiKeyChange={setApiKey}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          </div>
+
+          {/* Column 2: Chat Simulator (Middle/Main) */}
+          <div className={`flex-1 min-w-0 ${
+            activeTab === 'chat' ? 'flex flex-col w-full' : 'hidden xl:flex xl:flex-col'
+          }`}>
+            <ChatSimulator 
+              config={config} 
+              apiKey={apiKey}
+              bookings={bookings}
+              orders={orders}
+              inventory={inventory}
+              onAddBooking={handleAddBooking}
+              onAddOrder={handleAddOrder}
+              onConfirmPayment={handleConfirmPayment}
+            />
+          </div>
+
+          {/* Column 3: Owner CRM Dashboard (Right) - Hidden unless showOwnerDashboard is true */}
+          {showOwnerDashboard && (
+            <div className={`xl:w-[35%] xl:min-w-[420px] xl:max-w-[540px] flex-shrink-0 rounded-2xl border border-white/10 overflow-hidden animate-fade-in ${
+              activeTab === 'dashboard' ? 'flex flex-col w-full' : 'hidden xl:flex xl:flex-col'
+            }`}>
+              <OwnerDashboard
+                bookings={bookings}
+                orders={orders}
+                inventory={inventory}
+                onUpdateInventory={handleUpdateInventory}
+                onUpdateBookingStatus={handleUpdateBookingStatus}
+                onUpdateOrderStatus={handleUpdateOrderStatus}
+                onUpdateOrderPayment={handleUpdateOrderPayment}
+              />
+            </div>
+          )}
+
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }
+
