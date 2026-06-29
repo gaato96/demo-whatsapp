@@ -6,7 +6,7 @@ import { BusinessConfig, ChatMessage, Product } from '@/types';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { message, history, config, apiKey, inventory, imageBuffer, imageMime, audioBuffer, audioMime } = body as {
+    const { message, history, config, apiKey, inventory, imageBuffer, imageMime, audioBuffer, audioMime, dolarBlue } = body as {
       message: string;
       history: ChatMessage[];
       config: BusinessConfig;
@@ -16,6 +16,7 @@ export async function POST(request: NextRequest) {
       imageMime?: string;
       audioBuffer?: string;
       audioMime?: string;
+      dolarBlue?: { compra: number; venta: number };
     };
 
     // Validate required fields
@@ -43,8 +44,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Build the system prompt dynamically with the current inventory
-    const systemPrompt = buildSystemPrompt(config, inventory || []);
+    // Build the system prompt dynamically with the current inventory and dollar rate
+    const systemPrompt = buildSystemPrompt(config, inventory || [], dolarBlue);
 
     // Initialize Gemini
     const ai = new GoogleGenAI({ apiKey: geminiApiKey });

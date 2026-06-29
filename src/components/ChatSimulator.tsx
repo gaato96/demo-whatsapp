@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { ChatMessage, BusinessConfig, Product, Booking, Order } from '@/types';
+import { ChatMessage, BusinessConfig, Product, Booking, Order, DolarBlueRate } from '@/types';
 import { AUDIO_PROMPTS } from '@/lib/constants';
 import ChatHeader from './ChatHeader';
 import ChatMessages from './ChatMessages';
@@ -16,6 +16,7 @@ interface ChatSimulatorProps {
   onAddBooking: (booking: Omit<Booking, 'id' | 'createdAt' | 'status'>) => void;
   onAddOrder: (order: Omit<Order, 'id' | 'createdAt' | 'status' | 'paymentStatus'>) => void;
   onConfirmPayment: () => void;
+  dolarBlue?: DolarBlueRate;
 }
 
 export default function ChatSimulator({
@@ -27,6 +28,7 @@ export default function ChatSimulator({
   onAddBooking,
   onAddOrder,
   onConfirmPayment,
+  dolarBlue,
 }: ChatSimulatorProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isTyping, setIsTyping] = useState(false);
@@ -114,6 +116,7 @@ export default function ChatSimulator({
           imageMime,
           audioBuffer,
           audioMime,
+          dolarBlue,
         }),
       });
 
@@ -130,7 +133,7 @@ export default function ChatSimulator({
         ? `⚠️ ${error.message}`
         : '⚠️ Error al conectar con el servidor. Verifica tu conexión e intenta de nuevo.';
     }
-  }, [config, apiKey, inventory]);
+  }, [config, apiKey, inventory, dolarBlue]);
 
   const handleSendMessage = useCallback(async (
     text: string, 
@@ -219,12 +222,24 @@ export default function ChatSimulator({
     setMessages([]);
   };
 
-  return (
+    return (
     <div className="flex flex-col h-full bg-[#ECE5DD] rounded-2xl overflow-hidden shadow-2xl border border-white/10 relative">
       <ChatHeader
         businessName={config.businessName}
         isTyping={isTyping}
       />
+      
+      {/* Live Dólar Blue banner for iPhones rubro */}
+      {config.rubro === 'iphones' && dolarBlue && (
+        <div className="bg-slate-900 border-b border-white/5 px-4 py-1.5 flex items-center justify-between text-[11px] text-white/70 font-medium">
+          <span className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#00A884] animate-pulse"></span>
+            Dólar Blue Venta: <strong className="text-white">${dolarBlue.venta} ARS</strong>
+          </span>
+          <span className="text-[10px] text-white/30">Canjes tasados en USD</span>
+        </div>
+      )}
+
       <ChatMessages messages={messages} isTyping={isTyping} />
       <ChatInput
         onSendMessage={(text) => handleSendMessage(text)}

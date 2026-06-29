@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { BusinessConfig, Booking, Order, Product } from '@/types';
+import { useState, useEffect } from 'react';
+import { BusinessConfig, Booking, Order, Product, DolarBlueRate } from '@/types';
 import { DEFAULT_CONFIG, DEFAULT_INVENTORY } from '@/lib/constants';
 import ConfigPanel from '@/components/ConfigPanel';
 import ChatSimulator from '@/components/ChatSimulator';
@@ -17,6 +17,34 @@ export default function Home() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [inventory, setInventory] = useState<Product[]>(DEFAULT_INVENTORY);
+
+  // Live Dólar Blue rate
+  const [dolarBlue, setDolarBlue] = useState<DolarBlueRate>({
+    compra: 1350,
+    venta: 1400,
+    fechaActualizacion: new Date().toISOString(),
+  });
+
+  useEffect(() => {
+    const fetchDolar = async () => {
+      try {
+        const res = await fetch('https://dolarapi.com/v1/dolares/blue');
+        if (res.ok) {
+          const data = await res.json();
+          setDolarBlue({
+            compra: data.compra,
+            venta: data.venta,
+            fechaActualizacion: data.fechaActualizacion || new Date().toISOString(),
+          });
+        }
+      } catch (err) {
+        console.error('Error fetching dollar rate:', err);
+      }
+    };
+    fetchDolar();
+    const interval = setInterval(fetchDolar, 5 * 60 * 1000); // refresh every 5 min
+    return () => clearInterval(interval);
+  }, []);
 
   // State handlers
   const handleAddBooking = (newBooking: Omit<Booking, 'id' | 'createdAt' | 'status'>) => {
@@ -113,6 +141,18 @@ export default function Home() {
               <p className="text-white/40 text-xs">Simulador interactivo de bot inteligente</p>
             </div>
           </div>
+          
+          {/* Dollar Blue Ticker Widget */}
+          <div className="hidden lg:flex items-center gap-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-4 py-1.5 text-xs text-white">
+            <span className="text-[#00A884] font-bold flex items-center gap-1">
+              <span className="animate-pulse w-2 h-2 rounded-full bg-emerald-500"></span>
+              💵 Dólar Blue:
+            </span>
+            <span>Compra <strong className="text-white">${dolarBlue.compra}</strong></span>
+            <span className="text-white/20">|</span>
+            <span>Venta <strong className="text-white">${dolarBlue.venta}</strong></span>
+          </div>
+
           <div className="flex items-center gap-3">
             {/* Owner CRM Control Switch */}
             <button
@@ -196,6 +236,7 @@ export default function Home() {
               onAddBooking={handleAddBooking}
               onAddOrder={handleAddOrder}
               onConfirmPayment={handleConfirmPayment}
+              dolarBlue={dolarBlue}
             />
           </div>
 
@@ -212,6 +253,7 @@ export default function Home() {
                 onUpdateBookingStatus={handleUpdateBookingStatus}
                 onUpdateOrderStatus={handleUpdateOrderStatus}
                 onUpdateOrderPayment={handleUpdateOrderPayment}
+                dolarBlue={dolarBlue}
               />
             </div>
           )}

@@ -1,7 +1,7 @@
 import { BusinessConfig, Product } from '@/types';
 import { RUBROS } from './constants';
 
-export function buildSystemPrompt(config: BusinessConfig, inventory: Product[] = []): string {
+export function buildSystemPrompt(config: BusinessConfig, inventory: Product[] = [], dolarBlueRate?: { compra: number; venta: number }): string {
   const rubro = RUBROS.find(r => r.id === config.rubro);
   const rubroName = rubro ? rubro.name : config.rubro;
 
@@ -21,6 +21,7 @@ export function buildSystemPrompt(config: BusinessConfig, inventory: Product[] =
   let inventorySection = '';
   if (config.rubro === 'tienda' && inventory.length > 0) {
     const productsList = inventory
+      .filter(p => p.category === 'Zapatillas')
       .map(p => `- ID: ${p.id} | ${p.name} | Precio: $${p.price} | Talles disponibles: [${p.sizes.join(', ')}] | Stock: ${p.stock} unidades`)
       .join('\n');
     inventorySection = `\n\n## Inventario Activo (Sincronizado en Tiempo Real)
@@ -57,6 +58,106 @@ Cuando el cliente muestre intención de compra, NO crees el pedido inmediatament
 ⛔ Si el cliente envía múltiples mensajes, NUNCA crees múltiples pedidos. Un solo pedido por transacción completa.`;
   }
 
+  // Build Inventory and Negotiation section if rubro is iphones
+  if (config.rubro === 'iphones' && inventory.length > 0) {
+    const productsList = inventory
+      .filter(p => p.category === 'iPhones')
+      .map(p => `- ID: ${p.id} | ${p.name} | Precio: $${p.price} USD | Almacenamiento: ${p.storage || 'N/A'} | Batería: ${p.batteryHealth ? `${p.batteryHealth}%` : 'N/A'} | Detalles Estéticos: ${p.aestheticDetails || 'N/A'} | Color: ${p.color || 'N/A'} | Stock: ${p.stock} unidades`)
+      .join('\n');
+
+    const tradeInList = (config.iphoneTradeInSettings || [])
+      .map(t => `- ${t.model}: Rango de toma Min $${t.minPrice} USD | Max $${t.maxPrice} USD`)
+      .join('\n');
+
+    const blueVenta = dolarBlueRate?.venta || 1400;
+    const blueCompra = dolarBlueRate?.compra || 1350;
+
+    inventorySection = `\n\n## Catálogo de iPhones Disponibles (Precios en USD)
+Dispones de este catálogo de iPhones en stock:
+${productsList}
+
+💵 Cotización Dólar Blue de Referencia Hoy:
+- Compra (para equipos en parte de pago): $${blueCompra} ARS
+- Venta (para pago de saldos en pesos): $${blueVenta} ARS
+
+*Regla de Conversión*: Si el cliente pregunta el precio de un iPhone en pesos argentinos (ARS), conviértelo multiplicando su valor en USD por el Dólar Blue Venta ($${blueVenta} ARS). Por ejemplo, un equipo de $1000 USD equivale a $${(1000 * blueVenta).toLocaleString('es-AR')} ARS. Explica esto con transparencia mostrando ambos valores.
+
+## Cotizador de Canjes (Toma de Equipos Usados en Parte de Pago)
+Aceptamos iPhones usados en parte de pago bajo estos rangos de referencia en USD:
+${tradeInList || '- No hay modelos de canje configurados actualmente.'}
+
+### ⚖️ REGLAS DE NEGOCIACIÓN Y TOMA DE CANJES (CRÍTICO)
+Si un cliente te propone entregar su iPhone como parte de pago:
+1. **Ficha Técnica del Equipo**: Si aún no lo ha hecho, pregúntale obligatoriamente: Modelo exacto, Capacidad de almacenamiento (GB), Condición o salud de la batería (%) y si tiene algún detalle estético (rayaduras, golpes, trizaduras) o reparaciones.
+2. **Primera Oferta (El Mínimo)**: Inicia la cotización ofreciéndole el valor MÍNIMO de la tabla para ese modelo. (Ej: si para iPhone 13 el rango es $420-$520 USD, ofrécele $420 USD).
+3. **Regateo / Contraoferta Progresiva**:
+   - Si el cliente no acepta, dice que es muy bajo, o recalca que su equipo está impecable (batería >90%, sin marcas, etc.), simula analizarlo y sube la oferta unos $30-$50 USD (ej: sube a $460 USD).
+   - Si sigue negociando e insistiendo, puedes llegar hasta el valor MÁXIMO (ej: $520 USD), explicándole que por el excelente estado es lo máximo que la tienda puede ofrecer.
+   - ⛔ NUNCA superes el valor MÁXIMO configurado en la tabla para ese modelo.
+   - Si su modelo no está en la lista de canjes, indícale con amabilidad que debes consultar con el tasador y pídele sus datos.
+4. **Reserva Legal**: Aclara siempre que la cotización es estimativa por chat y que la tasación final se confirmará al revisar físicamente el equipo en el local.
+5. **Cálculo del Saldo**: Resta el valor acordado de toma del valor del equipo que compra. (Ej: Compra un iPhone 15 Pro de $1050 USD, entrega un iPhone 13 tomado a $500 USD. Saldo a pagar = $550 USD o su equivalente en ARS al dólar blue venta: $${(550 * blueVenta).toLocaleString('es-AR')} ARS).
+
+### ⚠️ PROCESO OBLIGATORIO DE COMPRA (MUY IMPORTANTE — LEE ESTO)
+Cuando el cliente muestre intención de compra, NO crees el pedido inmediatamente. Debes seguir un embudo ESTRICTO preguntando UNO A UNO, sin saltearte ningún paso:
+
+**PASO 1 — Nombre completo**: Pregúntale su nombre completo para el pedido.
+**PASO 2 — Confirmar modelo, color, almacenamiento y si hay canje**: Confirma qué modelo compra. Si hay canje, confirma el modelo entregado, sus detalles y el valor final en USD de la toma y el saldo restante.
+**PASO 3 — Tipo de entrega**: Preguntale si prefiere "envío a domicilio" o "retirar por el local". Si elige envío, pedile su dirección completa de entrega.
+**PASO 4 — Método de pago**: Preguntale si va a pagar con "Efectivo" (USD o ARS) o "Transferencia bancaria" (ARS al blue).
+
+**REGLAS SEGÚN MÉTODO DE PAGO:**
+- Si elige **EFECTIVO**: Aclará que el pago se realizará al recibir el envío (contra-reembolso) o en el local al retirar el pedido. El pedido queda registrado como "Pendiente de Pago".
+- Si elige **TRANSFERENCIA**: Proporcioná los siguientes datos bancarios para la transferencia:
+  📋 **Datos para Transferencia:**
+  • CBU: 0000003100012345678901
+  • Alias: ${config.businessName ? config.businessName.toLowerCase().replace(/[^a-z0-9]/g, '') : 'tienda'}.pago
+  • Titular: ${config.businessName || 'Tienda'}
+  Indícales que el pedido quedará como "Pendiente de Pago" hasta recibir el comprobante.
+
+**PASO 5 — Confirmación final**: Mostrá un RESUMEN detallado en USD (y ARS convertido) indicando: Nombre, Producto comprado, Equipo entregado en canje (si aplica), Saldo final a pagar, Tipo de Entrega, Método de Pago. Pedile que confirme con un "Sí" o "Confirmo".
+
+⛔ SOLO cuando el cliente haya dado su confirmación final explícita ("Sí", "Confirmo", "Dale", etc.), recién ahí debes disparar UNA SOLA acción 'create_order' con TODOS los datos recopilados. NUNCA dispares create_order si falta algún dato o si el cliente no confirmó explícitamente.
+⛔ Si el cliente envía múltiples mensajes, NUNCA crees múltiples pedidos. Un solo pedido por transacción completa.`;
+  }
+
+  // Build Inventory section if rubro is restaurante
+  if (config.rubro === 'restaurante' && inventory.length > 0) {
+    const productsList = inventory
+      .filter(p => p.category === 'Comida')
+      .map(p => `- ID: ${p.id} | ${p.name} | Precio: $${p.price} ARS | Stock: ${p.stock} unidades`)
+      .join('\n');
+    inventorySection = `\n\n## Menú de Comidas Disponible (Sincronizado en Tiempo Real)
+Dispones de este catálogo de platos y bebidas:
+${productsList}
+
+Reglas de E-commerce para Restaurante:
+1. Si el cliente pregunta por comida o platos, recomiéndale opciones de este menú.
+2. Siempre que ofrezcas un plato, debes disparar la acción 'show_product' con el ID correspondiente para que el sistema le muestre la tarjeta interactiva visual.
+3. Si el cliente decide comprar, guíalo paso a paso en el embudo para completar sus datos. NO crees el pedido hasta tener la información completa. Preguntale en orden:
+   a) Su nombre completo.
+   b) Los platos y cantidades a confirmar.
+   c) El método de entrega: si prefiere "envío a domicilio" (en cuyo caso debes pedirle su dirección exacta de entrega) o "retirar por el local".
+   d) El método de pago: "Efectivo" o "Transferencia".
+4. Si el método de pago es EFECTIVO, aclárale que abonará al recibir el envío o en el local al retirar.
+5. Si el método de pago es TRANSFERENCIA, bríndale los datos de cuenta del negocio (CBU: 0000003100012345678901, Alias: ${config.businessName ? config.businessName.toLowerCase().replace(/[^a-z0-9]/g, '') : 'restaurante'}.pago) e indícale que el pedido quedará registrado como pendiente y debe enviar el comprobante por acá para procesarlo.
+6. SOLO cuando el cliente haya provisto y confirmado: Nombre, Platos/Cantidades, Tipo de Entrega (con Dirección si es envío) y Método de Pago, debes disparar la acción 'create_order' con todos los detalles.`;
+  }
+
+  // Build Booking guidance instructions if the rubro uses appointments
+  const bookingRubros = ['peluqueria', 'clinica', 'gimnasio', 'hotel', 'automotriz'];
+  let bookingSection = '';
+  if (bookingRubros.includes(config.rubro)) {
+    bookingSection = `\n\n## Reglas de Agenda de Turnos y Reservas (Rubro de Servicios)
+Como asistente de un negocio de servicios, tu objetivo principal es ayudar al cliente a reservar su turno:
+1. Cuando el cliente solicite una cita, turno o reserva, guíalo paso a paso recopilando en orden:
+   - Su nombre completo.
+   - El servicio, especialidad médica o habitación que desea reservar.
+   - La fecha (día/mes) y la hora deseada (dentro de los horarios de atención: ${config.schedule || 'No especificado'}).
+2. Una vez que el cliente confirme la propuesta de fecha y hora, debes disparar la acción 'create_booking' al final de tu respuesta en una línea separada.
+   Ejemplo de acción final: '<action>{"type": "create_booking", "data": {"service": "Corte Caballero", "date": "2026-07-05", "time": "16:00", "clientName": "Juan Pérez"}}</action>'`;
+  }
+
   const prompt = `Eres el asistente virtual de WhatsApp con Inteligencia Artificial para el negocio "${config.businessName || 'Sin nombre'}".
 
 ## Tu Rol
@@ -70,7 +171,7 @@ Eres un agente de IA avanzado, NO un sistema de respuestas automáticas. Demuest
 - Teléfono de contacto: ${config.contactPhone || 'No especificado'}
 - Email: ${config.contactEmail || 'No especificado'}
 - Redes sociales: ${config.socialMedia || 'No especificadas'}
-- Medios de pago: ${config.paymentMethods || 'No especificados'}${dynamicFieldsSection}${inventorySection}
+- Medios de pago: ${config.paymentMethods || 'No especificados'}${dynamicFieldsSection}${inventorySection}${bookingSection}
 
 ${config.faq ? `## Preguntas Frecuentes\n${config.faq}` : ''}
 

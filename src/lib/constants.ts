@@ -49,6 +49,64 @@ export const DEFAULT_INVENTORY: Product[] = [
     imageUrl: MOCK_SHOE_IMAGES.puma,
     category: 'Zapatillas',
   },
+  {
+    id: 'iphone-15-pro-max',
+    name: 'iPhone 15 Pro Max Usado',
+    price: 1050,
+    sizes: [],
+    stock: 2,
+    imageUrl: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=600&auto=format&fit=crop&q=80',
+    category: 'iPhones',
+    batteryHealth: 96,
+    aestheticDetails: 'Impecable, sin detalles estéticos, incluye caja',
+    storage: '256GB',
+    color: 'Titanio Natural',
+    currency: 'USD',
+  },
+  {
+    id: 'iphone-13-standard',
+    name: 'iPhone 13 Standard Usado',
+    price: 550,
+    sizes: [],
+    stock: 4,
+    imageUrl: 'https://images.unsplash.com/photo-1616348436168-de43ad0db179?w=600&auto=format&fit=crop&q=80',
+    category: 'iPhones',
+    batteryHealth: 87,
+    aestheticDetails: 'Pequeñas marcas de uso en los bordes, pantalla sin rayas',
+    storage: '128GB',
+    color: 'Azul',
+    currency: 'USD',
+  },
+  {
+    id: 'pizza-muzzarella',
+    name: 'Pizza Muzzarella Especial',
+    price: 8500,
+    sizes: [],
+    stock: 20,
+    imageUrl: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=80',
+    category: 'Comida',
+    currency: 'ARS',
+  },
+  {
+    id: 'hamburguesa-completa',
+    name: 'Hamburguesa Completa con Fritas',
+    price: 9500,
+    sizes: [],
+    stock: 15,
+    imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop&q=80',
+    category: 'Comida',
+    currency: 'ARS',
+  },
+  {
+    id: 'empanadas-docena',
+    name: 'Empanadas de Carne (Docena)',
+    price: 12000,
+    sizes: [],
+    stock: 30,
+    imageUrl: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&auto=format&fit=crop&q=80',
+    category: 'Comida',
+    currency: 'ARS',
+  },
 ];
 
 export const RUBROS: Rubro[] = [
@@ -119,6 +177,16 @@ export const RUBROS: Rubro[] = [
     ],
   },
   {
+    id: 'iphones',
+    name: 'Compra y Venta de iPhones',
+    icon: '📱',
+    fields: [
+      { key: 'warranty', label: 'Garantía en Equipos', placeholder: 'Ej: Todos nuestros equipos cuentan con 90 días de garantía escrita', type: 'text' },
+      { key: 'conditions', label: 'Requisitos de Equipos en Parte de Pago', placeholder: 'Ej: Tomamos equipos a partir del iPhone 11. Deben tener batería mayor a 80%, pantalla original y no tener bypass/bloqueo de iCloud.', type: 'textarea' },
+      { key: 'paymentInfoUSD', label: 'Medios de Pago e Impuestos', placeholder: 'Ej: Aceptamos dólares billete (cara grande, sin marcas), transferencia bancaria en pesos al valor del Dólar Blue del día, y Mercado Pago con 10% de recargo.', type: 'textarea' },
+    ],
+  },
+  {
     id: 'educacion',
     name: 'Educación / Cursos',
     icon: '📚',
@@ -162,6 +230,14 @@ export const RUBROS: Rubro[] = [
   },
 ];
 
+export const DEFAULT_IPHONE_TRADE_IN = [
+  { model: 'iPhone 11', minPrice: 200, maxPrice: 280 },
+  { model: 'iPhone 12', minPrice: 300, maxPrice: 380 },
+  { model: 'iPhone 13', minPrice: 420, maxPrice: 520 },
+  { model: 'iPhone 14', minPrice: 550, maxPrice: 680 },
+  { model: 'iPhone 15', minPrice: 750, maxPrice: 900 },
+];
+
 export const DEFAULT_CONFIG: BusinessConfig = {
   businessName: '',
   rubro: 'restaurante',
@@ -175,6 +251,7 @@ export const DEFAULT_CONFIG: BusinessConfig = {
   faq: '',
   botPersonality: '',
   rubroFields: {},
+  iphoneTradeInSettings: DEFAULT_IPHONE_TRADE_IN,
 };
 
 export const AUDIO_PROMPTS = [

@@ -12,6 +12,18 @@ export interface Rubro {
   fields: RubroField[];
 }
 
+export interface TradeInOption {
+  model: string;
+  minPrice: number;
+  maxPrice: number;
+}
+
+export interface DolarBlueRate {
+  compra: number;
+  venta: number;
+  fechaActualizacion: string;
+}
+
 export interface BusinessConfig {
   businessName: string;
   rubro: string;
@@ -26,6 +38,7 @@ export interface BusinessConfig {
   botPersonality: string;
   // Dynamic rubro fields stored as key-value
   rubroFields: Record<string, string>;
+  iphoneTradeInSettings?: TradeInOption[];
 }
 
 export interface Product {
@@ -36,6 +49,12 @@ export interface Product {
   stock: number;
   imageUrl: string;
   category: string;
+  // iPhone specific properties (optional)
+  batteryHealth?: number;
+  aestheticDetails?: string;
+  storage?: string;
+  color?: string;
+  currency?: 'USD' | 'ARS';
 }
 
 export interface Booking {
