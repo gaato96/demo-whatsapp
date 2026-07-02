@@ -130,9 +130,7 @@ export default function ChatSimulator({
       return data.reply;
     } catch (error) {
       console.error('API Error:', error);
-      return error instanceof Error 
-        ? `⚠️ ${error.message}`
-        : '⚠️ Error al conectar con el servidor. Verifica tu conexión e intenta de nuevo.';
+      return 'Disculpas, estoy experimentando una pequeña interrupción en la señal. ¿Podrías volver a enviarme tu mensaje en unos segundos? ¡Gracias por la paciencia! 😊';
     }
   }, [config, apiKey, inventory, dolarBlue]);
 

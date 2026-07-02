@@ -7,14 +7,15 @@ import { saveConfig, loadConfig, saveApiKey, loadApiKey } from '@/lib/storage';
 import RubroFields from './RubroFields';
 
 interface ConfigPanelProps {
+  initialConfig?: BusinessConfig;
   onConfigChange: (config: BusinessConfig) => void;
   onApiKeyChange: (key: string) => void;
 }
 
 type AccordionSection = 'business' | 'rubro' | 'bot' | 'advanced';
 
-export default function ConfigPanel({ onConfigChange, onApiKeyChange }: ConfigPanelProps) {
-  const [config, setConfig] = useState<BusinessConfig>(DEFAULT_CONFIG);
+export default function ConfigPanel({ initialConfig, onConfigChange, onApiKeyChange }: ConfigPanelProps) {
+  const [config, setConfig] = useState<BusinessConfig>(initialConfig || DEFAULT_CONFIG);
   const [apiKey, setApiKey] = useState('');
   const [isSynced, setIsSynced] = useState(false);
   const [saveAnimation, setSaveAnimation] = useState(false);
@@ -27,19 +28,26 @@ export default function ConfigPanel({ onConfigChange, onApiKeyChange }: ConfigPa
   const [newMin, setNewMin] = useState('');
   const [newMax, setNewMax] = useState('');
 
-  // Load from localStorage on mount
+  // Load from localStorage or props on mount/change
   useEffect(() => {
-    const savedConfig = loadConfig();
     const savedKey = loadApiKey();
-    setConfig(savedConfig);
     setApiKey(savedKey);
-    onConfigChange(savedConfig);
     onApiKeyChange(savedKey);
-    if (savedConfig.businessName) {
+
+    if (initialConfig) {
+      setConfig(initialConfig);
+      onConfigChange(initialConfig);
       setIsSynced(true);
+    } else {
+      const savedConfig = loadConfig();
+      setConfig(savedConfig);
+      onConfigChange(savedConfig);
+      if (savedConfig.businessName) {
+        setIsSynced(true);
+      }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialConfig]);
 
   const updateField = (field: keyof BusinessConfig, value: string) => {
     setConfig(prev => ({ ...prev, [field]: value }));

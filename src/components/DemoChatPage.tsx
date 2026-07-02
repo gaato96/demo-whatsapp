@@ -155,7 +155,7 @@ export default function DemoChatPage({ preset, businessName, onBack }: DemoChatP
         {/* Config panel — desktop left sidebar */}
         {showConfig && (
           <div className="hidden md:flex flex-col w-[300px] xl:w-[340px] flex-shrink-0 border-r border-white/5 overflow-hidden animate-slide-in">
-            <ConfigPanel onConfigChange={setConfig} onApiKeyChange={setApiKey} />
+            <ConfigPanel initialConfig={config} onConfigChange={setConfig} onApiKeyChange={setApiKey} />
           </div>
         )}
 
@@ -211,7 +211,7 @@ export default function DemoChatPage({ preset, businessName, onBack }: DemoChatP
         {/* Mobile: Config view */}
         {mobileView === 'config' && (
           <div className="flex md:hidden flex-col flex-1 overflow-hidden">
-            <ConfigPanel onConfigChange={setConfig} onApiKeyChange={setApiKey} />
+            <ConfigPanel initialConfig={config} onConfigChange={setConfig} onApiKeyChange={setApiKey} />
           </div>
         )}
       </div>
