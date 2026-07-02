@@ -1,10 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
+
+/* ========================================
+   GLOBAL STYLES — WhatsApp AI Bot Demo
    Mobile-first, production-optimized
    ======================================== */
-
-/* Base Font */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
   --font-inter: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
