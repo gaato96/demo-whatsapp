@@ -70,7 +70,7 @@ export default function ChatSimulator({
           clientPhone: config.contactPhone || '+54 11 9999-9999',
         });
       } else if (action.type === 'create_order') {
-        const { clientName, items, total, paymentMethod, deliveryType, shippingAddress } = action.data;
+        const { clientName, items, total, paymentMethod, deliveryType, shippingAddress, tradeInDetails } = action.data;
         onAddOrder({
           clientName: clientName || 'Cliente WhatsApp',
           clientPhone: config.contactPhone || '+54 11 9999-9999',
@@ -79,6 +79,7 @@ export default function ChatSimulator({
           paymentMethod: paymentMethod || 'Efectivo',
           deliveryType: deliveryType || 'retiro',
           shippingAddress: shippingAddress || undefined,
+          tradeInDetails: tradeInDetails || undefined,
         });
       } else if (action.type === 'show_product') {
         const { productId } = action.data;

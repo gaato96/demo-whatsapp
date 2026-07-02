@@ -85,6 +85,7 @@ export interface Order {
   paymentMethod: string;
   deliveryType: 'envio' | 'retiro';
   shippingAddress?: string;
+  tradeInDetails?: string;
   status: 'confirmed' | 'delivered' | 'cancelled';
   paymentStatus: 'paid' | 'pending_payment';
   createdAt: Date;

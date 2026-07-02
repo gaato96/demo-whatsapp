@@ -400,6 +400,13 @@ export default function OwnerDashboard({
                         </div>
                       )}
 
+                      {order.tradeInDetails && (
+                        <div className="bg-[#8B5CF6]/10 border border-[#8B5CF6]/25 rounded-lg p-2.5">
+                          <span className="text-purple-400 block text-[10px] uppercase font-bold mb-0.5">🔄 Equipo Entregado en Canje</span>
+                          <span className="font-medium text-white text-xs whitespace-pre-wrap">{order.tradeInDetails}</span>
+                        </div>
+                      )}
+
                       {/* Payment method specific info */}
                       {order.paymentMethod?.toLowerCase() === 'transferencia' && order.paymentStatus === 'pending_payment' && (
                         <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-2.5">

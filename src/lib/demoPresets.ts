@@ -1,5 +1,4 @@
 import { BusinessConfig, Product, Booking } from '@/types';
-import { DEFAULT_IPHONE_TRADE_IN } from '@/lib/constants';
 
 export interface DemoPreset {
   slug: string;
@@ -15,7 +14,7 @@ export interface DemoPreset {
 }
 
 // ─────────────────────────────────────────────
-//  🍕  COMIDA / GASTRONOMÍA
+//  🍕  COMIDA / GASTRONOMÍA (MENU COMPLETO)
 // ─────────────────────────────────────────────
 const comidaConfig: BusinessConfig = {
   businessName: 'La Trattoria',
@@ -26,55 +25,130 @@ const comidaConfig: BusinessConfig = {
   contactEmail: 'pedidos@latrattoria.com.ar',
   socialMedia: 'Instagram: @latrattoria.tuc | Facebook: La Trattoria Tucumán',
   paymentMethods: 'Efectivo, Transferencia bancaria, Mercado Pago, Tarjetas de crédito/débito',
-  welcomeMessage: '¡Hola! 👋 Bienvenido a *La Trattoria* 🍕\n\nSomos tu pizzería de confianza con el mejor sabor casero de Tucumán. ¿Qué antojo te trajo por acá?\n\nPodés preguntarme por nuestro menú, precios, promociones, o hacer un pedido directamente por acá 😊',
+  welcomeMessage: '¡Hola! 👋 Bienvenido a *La Trattoria* 🍕\n\nTenemos el menú más completo de minutas, lomitos, pizzas, empanadas y comida mexicana de Tucumán. ¿Qué te gustaría pedir hoy?\n\nPodés consultarme la carta, precios, promociones, o hacerme tu pedido directamente por acá 😊',
   faq: `¿Hacen envíos? Sí, delivery disponible a toda la ciudad de San Miguel de Tucumán. Costo: zona centro gratis, resto $800.
 ¿Cuánto tarda el delivery? Entre 30 y 45 minutos promedio.
-¿Tienen opciones sin TACC? Sí, pizzas sin gluten con previo aviso (requiere 24hs de anticipación).
-¿Se puede pagar con tarjeta? Sí, aceptamos todas las tarjetas con y sin cuotas.
-¿Tienen estacionamiento? Contamos con estacionamiento gratuito en la parte trasera del local.`,
-  botPersonality: 'Sos un asistente simpático, cálido y muy conocedor de la gastronomía italiana. Usás emojis de comida con moderación. Sos directo con los precios y entusiasta con las promociones. Siempre ofrecés sugerencias del menú cuando el cliente no sabe qué pedir.',
+¿Tienen opciones sin TACC? Sí, pizzas y empanadas sin gluten con previo aviso (requiere 24hs de anticipación).
+¿Se puede pagar con tarjeta? Sí, aceptamos todas las tarjetas de débito/crédito con código QR o posnet móvil.
+¿Tienen lugar para comer ahí? Sí, salón amplio con aire acondicionado y espacio infantil.`,
+  botPersonality: 'Sos un asistente simpático, rápido y muy conocedor del menú. Usás emojis de comida de forma divertida y moderada. Sos claro con los precios y sugerís aderezos o bebidas adicionales para agrandar el pedido. Si te piden sugerencias, recomendás el Sándwich de Milanesa Completo o los Lomitos, que son la especialidad de la casa.',
   rubroFields: {
-    menu: `🍕 PIZZAS (porciones de 8 cortes)
+    menu: `🍕 PIZZAS (grandes de 8 porciones)
 - Pizza Muzzarella Especial - $8.500
-- Pizza Napolitana - $9.200
-- Pizza Fugazzeta - $9.800
+- Pizza Napolitana (con rodajas de tomate y ajo) - $9.200
+- Pizza Fugazzeta (muzzarella y cebolla) - $9.800
 - Pizza Cuatro Quesos - $10.500
 - Pizza de Rúcula y Jamón Crudo - $12.000
 
-🍔 HAMBURGUESAS
-- Hamburguesa Clásica (doble carne + papas fritas) - $9.500
-- Hamburguesa BBQ Crispy - $10.800
-- Hamburguesa Veggie - $8.900
-
-🥟 EMPANADAS (precio x docena)
-- Empanadas de Carne Cortada a Cuchillo - $12.000
+🥟 EMPANADAS (precio por docena / consultar unidad)
+- Empanadas de Carne a Cuchillo - $12.000
 - Empanadas de Pollo al Verdeo - $11.500
 - Empanadas de Jamón y Queso - $10.800
-- Empanadas de Humita - $10.500
+- Empanadas de Humita (choclo y queso) - $10.500
+
+🥪 SÁNDWICHES DE MILANESA (típicos tucumanos, pan sanguchero gigante)
+- Sándwich de Milanesa Simple - $7.500
+- Sándwich de Milanesa Completo (lechuga, tomate, huevo frito y queso) - $9.500
+- Sándwich de Milanesa Súper (con papas fritas adentro) - $11.000
+
+🥩 LOMITOS (en pan sanguchero premium)
+- Lomito Clásico - $9.000
+- Lomito Completo (jamón, queso, huevo, lechuga y tomate) - $11.500
+- Lomito Súper "La Trattoria" (doble carne, cheddar, bacon y aderezo especial) - $13.500
+
+🍽️ MILANESAS A LA NAPOLITANA (servidas con papas fritas)
+- Napolitana Individual con papas fritas - $10.500
+- Napolitana para Compartir (comen 2-3 personas) con papas fritas - $18.500
+
+🌮 COMIDA MEXICANA
+- Tacos de Carne Desmechada (porción de 3 unidades) - $9.500
+- Quesadillas de Pollo y Queso fundido - $8.800
+- Nachos con salsa Cheddar y Guacamole casero - $7.500
+
+🍰 TARTAS CASERAS (con ensalada de guarnición)
+- Tarta de Jamón y Queso - $6.500
+- Tarta de Verdura, Huevo y Queso - $6.000
 
 🥤 BEBIDAS
-- Gaseosas 1.5L - $2.800
-- Agua mineral - $1.500
-- Vino de la casa (media botella) - $5.500`,
-    delivery: 'Zona Centro (hasta 3km): GRATIS. Zona Norte/Sur/Oeste (3-7km): $800. Zona Gran Tucumán (más de 7km): $1.500.',
-    deliveryTime: '30 a 45 minutos en horario normal. Hasta 60 minutos los fines de semana y feriados.',
-    promotions: `⭐ PROMO MARTES 2x1: Llevás dos pizzas al precio de una (aplica a Muzzarella y Napolitana)
-⭐ COMBO FAMILIA: 2 pizzas grandes + 1 docena de empanadas + 2 gaseosas 1.5L por $32.000
-⭐ CUMPLEAÑOS: Si es tu cumpleaños, el postre va por la casa 🎂
-⭐ DESCUENTO ONLINE: 10% de descuento en todos los pedidos por WhatsApp pagando con transferencia.`,
+- Gaseosas 1.5L (Coca-Cola, Sprite) - $2.800
+- Cerveza Quilmes/Stella Artois 1L - $3.500
+- Agua mineral o Saborizada 500ml - $1.500`,
+    delivery: 'Zona Centro (hasta 3km): GRATIS. Zona Norte/Sur/Oeste (3-7km): $800. Zona Gran Tucumán: $1.500.',
+    deliveryTime: '30 a 45 minutos. Los fines de semana puede extenderse hasta 60 minutos.',
+    promotions: `⭐ PROMO MARTES 2x1: En pizzas grandes de Muzzarella y Napolitana.
+⭐ COMBO MILANESA: 2 Sándwiches de Milanesa Completos + 1 Gaseosa 1.5L por $20.000.
+⭐ COMBO AMIGOS: 1 Docena de empanadas + 1 Pizza Muzzarella + 1 Cerveza 1L por $22.000.
+⭐ DESCUENTO EFECTIVO: 10% de descuento en tu compra pagando al retirar del local.`,
   },
 };
 
 const comidaInventory: Product[] = [
-  { id: 'pizza-muzzarella', name: 'Pizza Muzzarella Especial', price: 8500, sizes: [], stock: 50, imageUrl: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=80', category: 'Pizzas', currency: 'ARS' },
-  { id: 'pizza-cuatro-quesos', name: 'Pizza Cuatro Quesos', price: 10500, sizes: [], stock: 40, imageUrl: 'https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=600&auto=format&fit=crop&q=80', category: 'Pizzas', currency: 'ARS' },
-  { id: 'hamburguesa-bbq', name: 'Hamburguesa BBQ Crispy', price: 10800, sizes: [], stock: 30, imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop&q=80', category: 'Hamburguesas', currency: 'ARS' },
-  { id: 'empanadas-carne', name: 'Empanadas de Carne (Docena)', price: 12000, sizes: [], stock: 100, imageUrl: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&auto=format&fit=crop&q=80', category: 'Empanadas', currency: 'ARS' },
-  { id: 'empanadas-pollo', name: 'Empanadas de Pollo (Docena)', price: 11500, sizes: [], stock: 80, imageUrl: 'https://images.unsplash.com/photo-1599490659213-e2b9527bd087?w=600&auto=format&fit=crop&q=80', category: 'Empanadas', currency: 'ARS' },
+  { id: 'pizza-muzzarella', name: 'Pizza Muzzarella Especial', price: 8500, sizes: [], stock: 40, imageUrl: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=80', category: 'Pizzas', currency: 'ARS' },
+  { id: 'empanadas-carne', name: 'Empanadas de Carne (Docena)', price: 12000, sizes: [], stock: 60, imageUrl: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&auto=format&fit=crop&q=80', category: 'Empanadas', currency: 'ARS' },
+  { id: 'sandwich-milanesa', name: 'Sándwich de Milanesa Completo', price: 9500, sizes: [], stock: 50, imageUrl: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=600&auto=format&fit=crop&q=80', category: 'Sándwiches', currency: 'ARS' },
+  { id: 'lomito-super', name: 'Lomito Súper La Trattoria', price: 13500, sizes: [], stock: 30, imageUrl: 'https://images.unsplash.com/photo-1521305916504-4a1121188589?w=600&auto=format&fit=crop&q=80', category: 'Lomitos', currency: 'ARS' },
+  { id: 'milanesa-napolitana', name: 'Milanesa Napolitana con Fritas (Compartir)', price: 18500, sizes: [], stock: 20, imageUrl: 'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=600&auto=format&fit=crop&q=80', category: 'Minutas', currency: 'ARS' },
+  { id: 'tacos-mexicanos', name: 'Tacos de Carne (3 unidades)', price: 9500, sizes: [], stock: 25, imageUrl: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600&auto=format&fit=crop&q=80', category: 'Mexicana', currency: 'ARS' },
+  { id: 'tarta-jamon-queso', name: 'Tarta de Jamón y Queso', price: 6500, sizes: [], stock: 15, imageUrl: 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=600&auto=format&fit=crop&q=80', category: 'Tartas', currency: 'ARS' },
+  { id: 'gaseosa-coca', name: 'Coca-Cola 1.5L', price: 2800, sizes: [], stock: 100, imageUrl: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600&auto=format&fit=crop&q=80', category: 'Bebidas', currency: 'ARS' },
 ];
 
 // ─────────────────────────────────────────────
-//  📱  COMPRA Y VENTA DE IPHONES
+//  🍔  HAMBURGUESERÍA (ESTILO LENO / BILLY BOB)
+// ─────────────────────────────────────────────
+const hamburguesasConfig: BusinessConfig = {
+  businessName: 'Leno Burger & Co',
+  rubro: 'restaurante',
+  schedule: 'Martes a Domingo de 19:30 a 00:30 hs | Lunes cerrado',
+  address: 'Av. Sarmiento 740, Tucumán',
+  contactPhone: '+54 381 555-5566',
+  contactEmail: 'hola@lenoburger.com',
+  socialMedia: 'Instagram: @lenoburger.co | TikTok: @lenosmash',
+  paymentMethods: 'Efectivo, Mercado Pago, Transferencia bancaria, Tarjetas de débito/crédito',
+  welcomeMessage: '¡Hola! 🍔 Bienvenido a *Leno Burger & Co* 🔥\n\nHacemos las hamburguesas Smashed más extremas de la ciudad, cebolla caramelizada, panceta crocante y mucho cheddar.\n\n¿Estás para pedir unas burgers hoy? Escribime para ver el menú o armar tu pedido 😋',
+  faq: `¿Hacen envíos? Sí, hacemos envíos con delivery propio. Costo de envío: zona de cobertura estándar $900.
+¿Qué es el estilo Oklahoma? Hacemos un smash directo de la bola de carne sobre láminas súper finas de cebolla, lo que le da una jugosidad única al caramelizarse en la plancha.
+¿Tienen hamburguesas vegetarianas o veganas? Sí, tenemos la Burger Veggie con medallón NotCo y queso vegetal.
+¿Los panes son caseros? Sí, horneamos nuestros panes de papa diariamente para asegurar la máxima esponjosidad.`,
+  botPersonality: 'Sos un cajero de hamburguesería joven, buena onda, informal pero muy eficiente. Usás expresiones como "che", "de una", "buenísimo" y emojis de hamburguesas y fuego. Conocés al detalle cada burger y podés explicar la diferencia entre una clásica y una Oklahoma smash. Siempre sugerís agregar papas cheddar o bebida para armar el combo.',
+  rubroFields: {
+    menu: `🍔 HAMBURGUESAS SMASH (Incluyen papas fritas simples)
+- Cheeseburger Clásica Simple (1 medallón de carne de 120g, doble cheddar, aderezo Leno) - $7.500
+- Cheeseburger Clásica Doble (2 medallones de carne, 4 cheddars, aderezo Leno) - $9.800
+- Oklahoma Onion Smash Doble (2 medallones de 120g smashed con cebolla fina en la plancha, 4 cheddars, pepinillos, aderezo especial) - $10.500
+- Americana Doble (2 medallones, 4 cheddars, doble panceta crocante, huevo frito y salsa BBQ) - $11.500
+- Billy Bacon Burger (2 medallones, triple cheddar, cebolla caramelizada, doble ración de panceta ahumada y salsa ahumada) - $12.000
+- Leno Extrema Triple (3 medallones smashed de 120g, 6 fetas de cheddar, panceta picada, cebolla crispy y salsa de la casa) - $14.500
+- Not Burger Veggie (Medallón de plantas NotCo, cheddar vegano, lechuga, tomate y aderezo NotMayo) - $9.200
+
+🍟 ACOMPAÑAMIENTOS
+- Papas Fritas Simples - $3.500
+- Papas Leno (Cheddar fundido, panceta picada crocante y cebollita de verdeo) - $5.500
+- Aros de Cebolla con salsa BBQ - $4.000
+
+🥤 BEBIDAS
+- Gaseosas lata 354ml - $1.800
+- Cerveza IPA Artesanal (Lata) - $3.200
+- Agua mineral - $1.500`,
+    delivery: 'Envíos en Yerba Buena y San Miguel de Tucumán en zonas delimitadas. Envío estándar: $900.',
+    deliveryTime: '30 a 50 minutos. Los fines de semana la espera puede ser de hasta 60-70 minutos.',
+    promotions: `⭐ COMBO SHOCK: Oklahoma Smash Doble + Papas Leno + Gaseosa Lata por $14.500
+⭐ Miércoles de Amigos: Llevando 3 Burgers Dobles (cualquiera), las papas simples se duplican gratis.
+⭐ 10% OFF en Efectivo realizando tu pedido para pasar a retirar (Take Away).`,
+  },
+};
+
+const hamburguesasInventory: Product[] = [
+  { id: 'burger-classic-double', name: 'Cheeseburger Clásica Doble', price: 9800, sizes: [], stock: 40, imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop&q=80', category: 'Burgers', currency: 'ARS' },
+  { id: 'burger-oklahoma-double', name: 'Oklahoma Onion Smash Doble', price: 10500, sizes: [], stock: 35, imageUrl: 'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=600&auto=format&fit=crop&q=80', category: 'Burgers', currency: 'ARS' },
+  { id: 'burger-americana', name: 'Hamburguesa Americana Doble', price: 11500, sizes: [], stock: 30, imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop&q=80', category: 'Burgers', currency: 'ARS' },
+  { id: 'burger-bacon-billy', name: 'Billy Bacon Burger Doble', price: 12000, sizes: [], stock: 25, imageUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop&q=80', category: 'Burgers', currency: 'ARS' },
+  { id: 'papas-cargadas-cheddar', name: 'Papas Fritas Leno (Cheddar y Bacon)', price: 5500, sizes: [], stock: 50, imageUrl: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?w=600&auto=format&fit=crop&q=80', category: 'Papas', currency: 'ARS' },
+  { id: 'gaseosa-lata', name: 'Gaseosa Lata 354ml', price: 1800, sizes: [], stock: 120, imageUrl: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600&auto=format&fit=crop&q=80', category: 'Bebidas', currency: 'ARS' },
+];
+
+// ─────────────────────────────────────────────
+//  📱  COMPRA Y VENTA DE IPHONES (UP TO 17 PRO MAX, NO ENVIOS)
 // ─────────────────────────────────────────────
 const iphoneConfig: BusinessConfig = {
   businessName: 'iStore Tucumán',
@@ -84,40 +158,39 @@ const iphoneConfig: BusinessConfig = {
   contactPhone: '+54 381 555-9876',
   contactEmail: 'ventas@istoretucuman.com.ar',
   socialMedia: 'Instagram: @istore.tucuman | TikTok: @istoretuc',
-  paymentMethods: 'Dólares billete (cara grande), Transferencia en pesos al valor Dólar Blue del día, Mercado Pago (+10% recargo)',
-  welcomeMessage: '¡Hola! 👋 Bienvenido a *iStore Tucumán* 📱\n\nSomos especialistas en compra y venta de iPhones usados certificados en Tucumán.\n\n¿Estás buscando comprar un equipo, o querés saber cuánto te damos por el tuyo?',
-  faq: `¿Los equipos tienen garantía? Sí, todos nuestros equipos cuentan con 90 días de garantía escrita por defecto. Podés extenderla a 6 meses por un adicional.
-¿Tienen pantalla original? Sí, solo vendemos equipos con pantalla y Face ID/Touch ID 100% originales.
-¿Puedo pagar en cuotas? En cuotas solo con tarjeta de crédito a través de Mercado Pago (tiene recargo del 10%).
-¿Hacen envíos? Sí, enviamos a todo el país por Andreani o OCA. El costo va por cuenta del comprador.
-¿Toman equipos con bypass de iCloud? No. Solo tomamos equipos desbloqueados y sin restricciones de ningún tipo.`,
-  botPersonality: 'Sos un vendedor experto en tecnología Apple, honesto y muy conocedor de los detalles técnicos de los iPhones. Siempre verificás las condiciones del equipo antes de dar una tasación. Sos transparente con los precios y las condiciones. Usás términos técnicos cuando habla con alguien que sabe, y los explicás de forma simple cuando el cliente es novato.',
+  paymentMethods: 'Dólares billete (cara grande, sin marcas), Transferencia en pesos al valor del Dólar Blue del día, Mercado Pago (+10% recargo)',
+  welcomeMessage: '¡Hola! 👋 Bienvenido a *iStore Tucumán* 📱\n\nSomos especialistas en compra, venta y canje de iPhones nuevos y usados certificados en Tucumán. Contamos con stock físico inmediato desde el iPhone 11 hasta el iPhone 17 Pro Max.\n\n⚠️ *Aviso importante:* Todas nuestras operaciones se realizan exclusivamente con retiro en nuestro local físico. No hacemos envíos de mercadería por seguridad.\n\n¿Estás buscando comprar un equipo, o querés tasar el tuyo para entregarlo en parte de pago?',
+  faq: `¿Hacen envíos? No hacemos envíos de equipos bajo ninguna circunstancia. Todas las compras y canjes se concretan retirando en nuestro local físico en Av. Aconquija 1250, Yerba Buena.
+¿Los equipos tienen garantía? Sí, todos nuestros equipos cuentan con 90 días de garantía escrita. Podés extenderla a 6 meses por un adicional de $50 USD.
+¿Qué requisitos debe cumplir mi equipo usado? Debe encender, tener batería superior al 78%, pantalla original sin líneas ni manchas, Face ID/Touch ID funcionando, y libre de iCloud.
+¿Aceptan transferencia? Sí, en pesos argentinos al valor del Dólar Blue Venta del día de la operación.
+¿Los precios son negociables? Los valores publicados son finales, pero podemos mejorar la cotización de toma de tu equipo usado si está en condiciones óptimas (batería >90%, sin detalles estéticos).`,
+  botPersonality: 'Sos un asesor de tecnología Apple experto, formal, transparente y muy detallista. Siempre preguntás la ficha técnica completa del equipo del cliente (modelo, capacidad, salud de batería, detalles estéticos) antes de dar una tasación definitiva. Explicás claramente que no se realizan envíos por seguridad. Al concretar un pedido, solicitás el nombre del cliente y el modelo a retirar, y disparás la acción "create_order" especificando siempre el detalle del canje en el campo "tradeInDetails".',
   rubroFields: {
-    warranty: '90 días de garantía escrita en todos los equipos. Extensión a 6 meses disponible.',
-    conditions: 'Tomamos equipos a partir del iPhone 11. Requisitos: pantalla original (sin cambio de display), batería mayor al 78%, sin bypass de iCloud, sin bloqueo MDM, y sin rayaduras severas en la pantalla.',
-    paymentInfoUSD: 'Los precios están en USD. Aceptamos: Dólares billete (cara grande, sin marcas), Transferencia en pesos al valor del Dólar Blue Venta del día de cierre, Mercado Pago con 10% de recargo.',
+    warranty: '90 días de garantía escrita oficial. Extensión a 6 meses por $50 USD.',
+    conditions: 'Tomamos equipos a partir del iPhone 11. Requisitos excluyentes: pantalla original sin reemplazos, Face ID activo, batería >= 78%, libre de iCloud y de bloqueo de red (apto para cualquier chip).',
+    paymentInfoUSD: 'Precios en USD. Aceptamos dólares billete (cara grande, sin tachaduras) o pesos argentinos vía transferencia bancaria calculados a la cotización del Dólar Blue Venta en tiempo real.',
   },
   iphoneTradeInSettings: [
     { model: 'iPhone 11', minPrice: 200, maxPrice: 270 },
-    { model: 'iPhone 11 Pro', minPrice: 270, maxPrice: 340 },
-    { model: 'iPhone 12', minPrice: 300, maxPrice: 390 },
-    { model: 'iPhone 12 Pro', minPrice: 370, maxPrice: 460 },
-    { model: 'iPhone 13', minPrice: 430, maxPrice: 530 },
-    { model: 'iPhone 13 Pro', minPrice: 520, maxPrice: 640 },
-    { model: 'iPhone 14', minPrice: 560, maxPrice: 690 },
-    { model: 'iPhone 14 Pro', minPrice: 680, maxPrice: 820 },
-    { model: 'iPhone 15', minPrice: 760, maxPrice: 920 },
-    { model: 'iPhone 15 Pro', minPrice: 880, maxPrice: 1050 },
-    { model: 'iPhone 15 Pro Max', minPrice: 980, maxPrice: 1180 },
+    { model: 'iPhone 12', minPrice: 300, maxPrice: 380 },
+    { model: 'iPhone 13', minPrice: 420, maxPrice: 520 },
+    { model: 'iPhone 14', minPrice: 550, maxPrice: 680 },
+    { model: 'iPhone 15', minPrice: 700, maxPrice: 880 },
+    { model: 'iPhone 15 Pro Max', minPrice: 850, maxPrice: 1050 },
+    { model: 'iPhone 16', minPrice: 800, maxPrice: 980 },
+    { model: 'iPhone 16 Pro Max', minPrice: 1000, maxPrice: 1220 },
+    { model: 'iPhone 17', minPrice: 1100, maxPrice: 1350 },
+    { model: 'iPhone 17 Pro Max', minPrice: 1300, maxPrice: 1580 },
   ],
 };
 
 const iphoneInventory: Product[] = [
-  { id: 'ip15promax-256', name: 'iPhone 15 Pro Max — 256GB', price: 1100, sizes: [], stock: 2, imageUrl: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=600&auto=format&fit=crop&q=80', category: 'iPhones', batteryHealth: 97, aestheticDetails: 'Impecable, sin detalles, incluye caja y accesorios originales', storage: '256GB', color: 'Titanio Negro', currency: 'USD' },
-  { id: 'ip15pro-128', name: 'iPhone 15 Pro — 128GB', price: 880, sizes: [], stock: 3, imageUrl: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=600&auto=format&fit=crop&q=80', category: 'iPhones', batteryHealth: 99, aestheticDetails: 'Impecable, pantalla sin rayas', storage: '128GB', color: 'Titanio Blanco', currency: 'USD' },
-  { id: 'ip14-256', name: 'iPhone 14 — 256GB', price: 650, sizes: [], stock: 4, imageUrl: 'https://images.unsplash.com/photo-1663499482523-1c0c1bae4ce1?w=600&auto=format&fit=crop&q=80', category: 'iPhones', batteryHealth: 91, aestheticDetails: 'Muy buen estado, leve marca en el marco izquierdo', storage: '256GB', color: 'Medianoche', currency: 'USD' },
-  { id: 'ip13-128', name: 'iPhone 13 — 128GB', price: 520, sizes: [], stock: 5, imageUrl: 'https://images.unsplash.com/photo-1616348436168-de43ad0db179?w=600&auto=format&fit=crop&q=80', category: 'iPhones', batteryHealth: 87, aestheticDetails: 'Buen estado, pequeñas marcas de uso en bordes, sin rayas en pantalla', storage: '128GB', color: 'Azul', currency: 'USD' },
-  { id: 'ip12-128', name: 'iPhone 12 — 128GB', price: 370, sizes: [], stock: 6, imageUrl: 'https://images.unsplash.com/photo-1607936854279-55e8a4c64888?w=600&auto=format&fit=crop&q=80', category: 'iPhones', batteryHealth: 82, aestheticDetails: 'Estado regular, algunas marcas de uso, pantalla original sin rayas', storage: '128GB', color: 'Negro', currency: 'USD' },
+  { id: 'ip17promax-256', name: 'iPhone 17 Pro Max (Usado Certificado)', price: 1580, sizes: [], stock: 1, imageUrl: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=600&auto=format&fit=crop&q=80', category: 'iPhones', batteryHealth: 100, aestheticDetails: 'Como nuevo, sin un solo detalle, incluye caja original', storage: '256GB', color: 'Titanio Desierto', currency: 'USD' },
+  { id: 'ip16promax-256', name: 'iPhone 16 Pro Max (Usado Certificado)', price: 1250, sizes: [], stock: 2, imageUrl: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=600&auto=format&fit=crop&q=80', category: 'iPhones', batteryHealth: 96, aestheticDetails: 'Impecable, film protector colocado en pantalla', storage: '256GB', color: 'Titanio Natural', currency: 'USD' },
+  { id: 'ip15promax-256', name: 'iPhone 15 Pro Max (Usado Certificado)', price: 980, sizes: [], stock: 3, imageUrl: 'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=600&auto=format&fit=crop&q=80', category: 'iPhones', batteryHealth: 92, aestheticDetails: 'Excelente estado, marcas leves de funda en bordes', storage: '256GB', color: 'Titanio Azul', currency: 'USD' },
+  { id: 'ip14-128', name: 'iPhone 14 (Usado Certificado)', price: 620, sizes: [], stock: 4, imageUrl: 'https://images.unsplash.com/photo-1663499482523-1c0c1bae4ce1?w=600&auto=format&fit=crop&q=80', category: 'iPhones', batteryHealth: 88, aestheticDetails: 'Buen estado general, marcas normales de uso diario', storage: '128GB', color: 'Púrpura', currency: 'USD' },
+  { id: 'ip13-128', name: 'iPhone 13 (Usado Certificado)', price: 510, sizes: [], stock: 5, imageUrl: 'https://images.unsplash.com/photo-1616348436168-de43ad0db179?w=600&auto=format&fit=crop&q=80', category: 'iPhones', batteryHealth: 85, aestheticDetails: 'Buen estado, detalle estético mínimo en cámara trasera (no afecta funcionamiento)', storage: '128GB', color: 'Azul', currency: 'USD' },
 ];
 
 // ─────────────────────────────────────────────
@@ -216,60 +289,67 @@ const medicoBookings: Booking[] = [
 ];
 
 // ─────────────────────────────────────────────
-//  🥩  CARNICERÍA
+//  🥩  CARNICERÍA (ARGENTINE CUTS & PRICES)
 // ─────────────────────────────────────────────
 const carniceriaConfig: BusinessConfig = {
   businessName: 'Carnicería El Gaucho',
   rubro: 'tienda',
-  schedule: 'Lunes a Sábados de 7:00 a 13:00 y de 17:00 a 21:00 hs | Domingos de 8:00 a 12:00 hs',
+  schedule: 'Lunes a Sábados de 7:30 a 13:30 y de 17:00 a 21:00 hs | Domingos de 8:30 a 13:00 hs',
   address: 'Belgrano 1400, Barrio Norte, Tucumán',
   contactPhone: '+54 381 555-8800',
   contactEmail: 'elgaucho@carniceria.com.ar',
   socialMedia: 'Instagram: @carniceria.elgaucho',
-  paymentMethods: 'Efectivo, Transferencia bancaria, Mercado Pago (sin recargo)',
-  welcomeMessage: '¡Hola! 👋 Bienvenido a *Carnicería El Gaucho* 🥩\n\nCarne fresca, cortes premium y el mejor asado de Tucumán. ¿Qué necesitás para hoy?',
-  faq: `¿Hacen pedidos por encargo? Sí, pedidos de más de 5kg con 24hs de anticipación. Pedidos para eventos y asados: consultar.
-¿Tienen delivery? Sí, para pedidos mayores a $15.000. Zona de reparto: radio de 5km desde el local.
-¿Los productos son frescos? Sí, recibimos media res directamente de frigorífico tres veces por semana (lunes, miércoles y viernes).
-¿Tienen productos listos para el asado? Sí: chorizos, morcillas, mollejas, riñones y pollo entero siempre disponibles.
-¿Hacen paquetes de asado? Sí, consultá nuestro Paquete Asado Familiar (12 personas).`,
-  botPersonality: 'Sos un carnicero experto y apasionado del buen asado argentino. Conocés cada corte, su preparación ideal, y cómo elegir la mejor carne según la ocasión. Sos amigable, directo y usás el lenguaje del asado argentino. Recomendás cortes según el uso (parrilla, horno, guiso) y siempre ofrecés el precio por kilo.',
+  paymentMethods: 'Efectivo, Transferencia bancaria (Mercado Pago, Cuenta DNI, BNA+), Tarjetas de débito/crédito sin recargo',
+  welcomeMessage: '¡Hola! 👋 Bienvenido a *Carnicería El Gaucho* 🥩\n\nOfrecemos los mejores cortes de novillo seleccionado, pollo fresco, embutidos artesanales y todo lo necesario para tu asado. ¿En qué corte estás pensando para hoy?',
+  faq: `¿Hacen envíos? Sí, delivery a domicilio sin cargo para compras superiores a $15.000 en un radio de 4km. Para montos menores o zonas alejadas, el envío cuesta $800.
+¿Tienen carbón y leña? Sí, bolsa de carbón de quebracho de 5kg y bolsa de leña seca de espinillo de 10kg disponibles para agregar a tu pedido.
+¿Tienen achuras frescas? Sí, mollejas, chinchulines, riñones y tripa gorda entran los días miércoles y viernes frescos de frigorífico.
+¿Venden carne envasada al vacío? Sí, podemos envasar al vacío cualquier corte que pidas para que te dure más tiempo en la heladera o freezer.`,
+  botPersonality: 'Sos un carnicero de barrio muy experimentado, gaucho, servicial y apasionado de la parrilla y la cocina argentina. Respondés con modismos cordiales y conocés a la perfección para qué sirve cada corte (ej: nalga o cuadrada para milanesas, vacío o asado para parrilla, lomo para bifes tiernos). Brindás los precios por kilo claramente y sugerís carbón o embutidos si el cliente menciona un asado.',
   rubroFields: {
-    catalog: `🥩 CORTES VACUNOS (precio por kg)
-- Asado de tira - $6.500/kg
-- Vacío - $7.200/kg
-- Costillar - $5.800/kg
-- Bife de chorizo - $9.500/kg
-- Lomo - $12.000/kg
-- Cuadril - $8.000/kg
-- Nalga - $5.500/kg
-- Paleta - $4.800/kg
+    catalog: `🥩 CORTES PARA PARRILLA (precio por kg)
+- Asado de tira especial - $7.500/kg
+- Vacío premium - $8.200/kg
+- Entraña seleccionada - $9.800/kg
+- Tapa de asado - $6.200/kg
+- Costilla de ternera - $6.800/kg
+- Matambre - $7.800/kg
 
-🍗 POLLO
-- Pollo entero - $3.200/kg
-- Pechuga sin hueso - $5.000/kg
-- Muslos y contramuslos - $3.800/kg
+🥩 CORTES PARA MILANESAS Y GUISOS
+- Nalga para Milanesa (bifes cortados listos) - $6.500/kg
+- Cuadrada para Milanesa - $5.900/kg
+- Lomo premium (super tierno) - $11.000/kg
+- Peceto - $9.500/kg
+- Roast beef (ideal estofado/carne picada) - $4.900/kg
+- Osobuco - $3.800/kg
 
-🌭 EMBUTIDOS Y ACHURAS
-- Chorizos criollos - $4.200/kg
-- Morcilla - $3.800/kg
-- Mollejas - $5.500/kg
-- Riñones - $3.500/kg
-- Chinchulín - $4.000/kg
+🍗 POLLO FRESCO
+- Pollo entero (limpio) - $2.800/kg
+- Suprema de pollo fileteada - $5.500/kg
+- Pata y muslo (x kg) - $3.200/kg
 
-📦 PAQUETES ESPECIALES
-- Paquete Asado Familiar (12 personas): 3kg asado + 2kg vacío + 12 chorizos + 12 morcillas - $65.000`,
-    shipping: 'Delivery gratuito para pedidos mayores a $15.000 en radio de 5km. Para zonas más lejanas, consultar costo.',
-    returns: 'No se aceptan devoluciones en productos cárnicos por razones de higiene. Ante cualquier problema con la calidad, comunicarse de inmediato.',
+🌭 ACHURAS Y EMBUTIDOS
+- Chorizo criollo artesanal - $4.500/kg
+- Morcilla bombón - $3.800/kg
+- Chinchulín limpio - $4.000/kg
+- Mollejas tiernas - $5.500/kg
+
+🔥 PARA EL FUEGO (COMPLEMENTOS)
+- Carbón vegetal de Quebracho (bolsa 5kg) - $3.500
+- Leña seca de Espinillo (bolsa 10kg) - $4.000`,
+    shipping: 'Delivery a domicilio rápido en moto en zonas aledañas. Sin cargo para pedidos de más de $15.000. Caso contrario cuesta $800.',
+    returns: 'Al ser productos frescos perecederos, no se aceptan devoluciones. Si hay un reclamo sobre la cadena de frío o estado, contactarse dentro de las 2 horas de recibido.',
   },
 };
 
 const carniceriaInventory: Product[] = [
-  { id: 'asado-tira', name: 'Asado de Tira (por kg)', price: 6500, sizes: [], stock: 40, imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&auto=format&fit=crop&q=80', category: 'Vacuno', currency: 'ARS' },
-  { id: 'vacio', name: 'Vacío (por kg)', price: 7200, sizes: [], stock: 25, imageUrl: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=600&auto=format&fit=crop&q=80', category: 'Vacuno', currency: 'ARS' },
-  { id: 'lomo', name: 'Lomo (por kg)', price: 12000, sizes: [], stock: 10, imageUrl: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=600&auto=format&fit=crop&q=80', category: 'Vacuno', currency: 'ARS' },
-  { id: 'chorizo', name: 'Chorizos Criollos (por kg)', price: 4200, sizes: [], stock: 60, imageUrl: 'https://images.unsplash.com/photo-1594041680534-e8c8cdebd659?w=600&auto=format&fit=crop&q=80', category: 'Embutidos', currency: 'ARS' },
-  { id: 'paquete-asado', name: 'Paquete Asado Familiar (12 personas)', price: 65000, sizes: [], stock: 15, imageUrl: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&auto=format&fit=crop&q=80', category: 'Paquetes', currency: 'ARS' },
+  { id: 'asado-tira', name: 'Asado de Tira Especial (por kg)', price: 7500, sizes: [], stock: 35, imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&auto=format&fit=crop&q=80', category: 'Parrilla', currency: 'ARS' },
+  { id: 'vacio', name: 'Vacío Premium (por kg)', price: 8200, sizes: [], stock: 25, imageUrl: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=600&auto=format&fit=crop&q=80', category: 'Parrilla', currency: 'ARS' },
+  { id: 'entranas', name: 'Entraña Seleccionada (por kg)', price: 9800, sizes: [], stock: 15, imageUrl: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&auto=format&fit=crop&q=80', category: 'Parrilla', currency: 'ARS' },
+  { id: 'nalga-milanesa', name: 'Nalga para Milanesa (por kg)', price: 6500, sizes: [], stock: 40, imageUrl: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=600&auto=format&fit=crop&q=80', category: 'Minutas', currency: 'ARS' },
+  { id: 'lomo-premium', name: 'Lomo Premium (por kg)', price: 11000, sizes: [], stock: 12, imageUrl: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=600&auto=format&fit=crop&q=80', category: 'Cortes', currency: 'ARS' },
+  { id: 'suprema-pollo', name: 'Suprema de Pollo (por kg)', price: 5500, sizes: [], stock: 30, imageUrl: 'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=600&auto=format&fit=crop&q=80', category: 'Pollo', currency: 'ARS' },
+  { id: 'carbon-quebracho', name: 'Bolsa de Carbón Quebracho 5kg', price: 3500, sizes: [], stock: 50, imageUrl: 'https://images.unsplash.com/photo-1594041680534-e8c8cdebd659?w=600&auto=format&fit=crop&q=80', category: 'Accesorios', currency: 'ARS' },
 ];
 
 // ─────────────────────────────────────────────
@@ -381,10 +461,21 @@ export const DEMO_PRESETS: DemoPreset[] = [
     icon: '🍕',
     accentColor: 'from-orange-600 via-red-600 to-rose-700',
     accentHex: '#dc2626',
-    tagline: 'Pedidos, menú, delivery y más — todo por WhatsApp',
+    tagline: 'Pizzas, empanadas, milanesas, lomitos, minutas y tacos por WhatsApp',
     defaultName: 'La Trattoria',
     config: comidaConfig,
     inventory: comidaInventory,
+  },
+  {
+    slug: 'hamburguesas',
+    rubroLabel: 'Hamburguesería / Fast Food',
+    icon: '🍔',
+    accentColor: 'from-amber-600 via-yellow-600 to-amber-700',
+    accentHex: '#d97706',
+    tagline: 'Hamburguesas clásicas, smash y papas cargadas por WhatsApp',
+    defaultName: 'Leno Burger & Co',
+    config: hamburguesasConfig,
+    inventory: hamburguesasInventory,
   },
   {
     slug: 'iphone',
@@ -392,7 +483,7 @@ export const DEMO_PRESETS: DemoPreset[] = [
     icon: '📱',
     accentColor: 'from-slate-700 via-slate-800 to-gray-900',
     accentHex: '#6366f1',
-    tagline: 'Cotizá tu canje, consultá precios en USD y comprá sin salir de WhatsApp',
+    tagline: 'Cotizá tu canje, consultá precios en USD y reservá retiro en local por WhatsApp',
     defaultName: 'iStore Tucumán',
     config: iphoneConfig,
     inventory: iphoneInventory,
@@ -427,7 +518,7 @@ export const DEMO_PRESETS: DemoPreset[] = [
     icon: '🥩',
     accentColor: 'from-red-700 via-red-800 to-rose-900',
     accentHex: '#b91c1c',
-    tagline: 'Cortes, precios y pedidos para el mejor asado argentino',
+    tagline: 'Cortes criollos, precios actualizados y pedidos al local',
     defaultName: 'Carnicería El Gaucho',
     config: carniceriaConfig,
     inventory: carniceriaInventory,
