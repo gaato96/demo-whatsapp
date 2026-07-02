@@ -1,17 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
-
-/* ========================================
-   GLOBAL STYLES — WhatsApp AI Bot Demo
+   Mobile-first, production-optimized
    ======================================== */
 
 /* Base Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
 :root {
   --font-inter: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --wa-green: #00A884;
+  --wa-dark: #075E54;
+  --wa-bg: #ECE5DD;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   font-family: var(--font-inter);
   overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ========================================
+   MOBILE-SAFE VIEWPORT FIX
+   Handles the iOS/Android browser chrome
+   ======================================== */
+.h-screen-mobile {
+  height: 100dvh; /* dynamic viewport height — handles mobile browser bars */
 }
 
 /* ========================================
@@ -85,6 +104,22 @@ body {
   }
 }
 
+/* Slide in from left */
+.animate-slide-in {
+  animation: slideIn 0.25s ease-out forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 /* ========================================
    PULSE RING ANIMATION (Save Button)
    ======================================== */
@@ -108,7 +143,7 @@ body {
    CUSTOM SCROLLBAR
    ======================================== */
 .custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
+  width: 4px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -133,6 +168,13 @@ body {
   background-color: rgba(0, 0, 0, 0.25);
 }
 
+/* Hide scrollbar on mobile touch devices */
+@media (max-width: 768px) {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 0;
+  }
+}
+
 /* ========================================
    SELECT DROPDOWN ARROW
    ======================================== */
@@ -152,4 +194,49 @@ select {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ========================================
+   SAFE AREA INSETS (for iPhone notch, etc.)
+   ======================================== */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* ========================================
+   TOUCH OPTIMIZATIONS
+   ======================================== */
+button, a, [role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent text selection on UI elements */
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ========================================
+   MOBILE CHAT INPUT FIXES
+   Prevents iOS zoom on input focus
+   ======================================== */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea {
+  font-size: 16px; /* iOS won't zoom if font-size >= 16px */
+}
+
+/* ========================================
+   PRODUCT CARD MOBILE
+   ======================================== */
+.product-card {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }

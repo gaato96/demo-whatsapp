@@ -26,6 +26,7 @@ export default function Home() {
   });
 
   useEffect(() => {
+    if (config.rubro !== 'iphones') return; // Only fetch for iPhone rubro
     const fetchDolar = async () => {
       try {
         const res = await fetch('https://dolarapi.com/v1/dolares/blue');
@@ -42,9 +43,9 @@ export default function Home() {
       }
     };
     fetchDolar();
-    const interval = setInterval(fetchDolar, 5 * 60 * 1000); // refresh every 5 min
+    const interval = setInterval(fetchDolar, 5 * 60 * 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [config.rubro]);
 
   // State handlers
   const handleAddBooking = (newBooking: Omit<Booking, 'id' | 'createdAt' | 'status'>) => {
@@ -142,16 +143,18 @@ export default function Home() {
             </div>
           </div>
           
-          {/* Dollar Blue Ticker Widget */}
-          <div className="hidden lg:flex items-center gap-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-4 py-1.5 text-xs text-white">
-            <span className="text-[#00A884] font-bold flex items-center gap-1">
-              <span className="animate-pulse w-2 h-2 rounded-full bg-emerald-500"></span>
-              💵 Dólar Blue:
-            </span>
-            <span>Compra <strong className="text-white">${dolarBlue.compra}</strong></span>
-            <span className="text-white/20">|</span>
-            <span>Venta <strong className="text-white">${dolarBlue.venta}</strong></span>
-          </div>
+          {/* Dollar Blue Ticker Widget — only for iPhone rubro */}
+          {config.rubro === 'iphones' && (
+            <div className="hidden lg:flex items-center gap-3 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-4 py-1.5 text-xs text-white">
+              <span className="text-[#00A884] font-bold flex items-center gap-1">
+                <span className="animate-pulse w-2 h-2 rounded-full bg-emerald-500"></span>
+                💵 Dólar Blue:
+              </span>
+              <span>Compra <strong className="text-white">${dolarBlue.compra}</strong></span>
+              <span className="text-white/20">|</span>
+              <span>Venta <strong className="text-white">${dolarBlue.venta}</strong></span>
+            </div>
+          )}
 
           <div className="flex items-center gap-3">
             {/* Owner CRM Control Switch */}
@@ -170,7 +173,7 @@ export default function Home() {
             <div className="flex items-center gap-1.5 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full px-3 py-1.5">
               <span className="text-sm">✨</span>
               <span className="text-xs font-medium bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                Google Gemini 2.5
+                IA Multimodal v2
               </span>
             </div>
           </div>
@@ -249,11 +252,12 @@ export default function Home() {
                 bookings={bookings}
                 orders={orders}
                 inventory={inventory}
+                rubro={config.rubro}
                 onUpdateInventory={handleUpdateInventory}
                 onUpdateBookingStatus={handleUpdateBookingStatus}
                 onUpdateOrderStatus={handleUpdateOrderStatus}
                 onUpdateOrderPayment={handleUpdateOrderPayment}
-                dolarBlue={dolarBlue}
+                dolarBlue={config.rubro === 'iphones' ? dolarBlue : undefined}
               />
             </div>
           )}

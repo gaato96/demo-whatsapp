@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     if (!geminiApiKey) {
       return NextResponse.json(
-        { error: 'No se encontró una API Key de Gemini. Configura una en el panel o contacta al administrador.' },
+        { error: 'No se encontró una clave de API activa. Configura una en el panel o contacta al administrador.' },
         { status: 401 }
       );
     }
@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
     
     if (errorMessage.includes('API_KEY_INVALID') || errorMessage.includes('401')) {
       return NextResponse.json(
-        { error: 'La API Key de Gemini no es válida. Verifica tu configuración.' },
+        { error: 'La clave de API no es válida. Verifica tu configuración.' },
         { status: 401 }
       );
     }
@@ -178,7 +178,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'Error al procesar el mensaje en Gemini. Intenta de nuevo.' },
+      { error: 'Error al procesar el mensaje. Intenta de nuevo.' },
       { status: 500 }
     );
   }

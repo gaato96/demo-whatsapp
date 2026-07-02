@@ -402,7 +402,7 @@ export default function ConfigPanel({ onConfigChange, onApiKeyChange }: ConfigPa
           {activeSection === 'advanced' && (
             <div className="p-4 space-y-3 animate-fade-in text-xs">
               <div>
-                <label className="block text-white/60 mb-1.5 font-medium">Gemini API Key</label>
+                <label className="block text-white/60 mb-1.5 font-medium">Clave de API IA (Opcional)</label>
                 <input
                   type="password"
                   value={apiKey}
@@ -410,11 +410,11 @@ export default function ConfigPanel({ onConfigChange, onApiKeyChange }: ConfigPa
                     setApiKey(e.target.value);
                     setIsSynced(false);
                   }}
-                  placeholder="Ingresa tu clave de Gemini API"
+                  placeholder="Ingresa tu clave de API"
                   className="w-full bg-slate-950 border border-white/10 rounded-lg px-3 py-2 text-white placeholder-white/20 outline-none focus:border-[#00A884]/60 transition-all font-mono"
                 />
                 <p className="text-white/30 text-[10px] leading-relaxed mt-1">
-                  Opcional. Si se deja vacía, la demo usará la clave del servidor por defecto. Se guarda de forma local en tu navegador.
+                  Opcional. Si se deja vacía, la demo usará la clave de conexión por defecto. Se guarda de forma local en tu navegador.
                 </p>
               </div>
             </div>

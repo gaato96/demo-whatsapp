@@ -14,112 +14,73 @@ interface DemoChatPageProps {
 }
 
 export default function DemoChatPage({ preset, businessName, onBack }: DemoChatPageProps) {
-  // Initialize config with preset and customized business name
   const [config, setConfig] = useState<BusinessConfig>({
     ...preset.config,
     businessName: businessName,
   });
 
   const [apiKey, setApiKey] = useState('');
-  const [activeTab, setActiveTab] = useState<'chat' | 'dashboard' | 'config'>('chat');
-  
-  // UX controls: config starts hidden as requested, owner dashboard too
-  const [showConfig, setShowConfig] = useState(false);
-  const [showOwnerDashboard, setShowOwnerDashboard] = useState(false);
 
-  // CRM simulation states populated from preset
+  // Mobile: one panel visible at a time
+  type MobileView = 'chat' | 'crm' | 'config';
+  const [mobileView, setMobileView] = useState<MobileView>('chat');
+
+  // Desktop: togglable sidepanels (hidden by default per user request)
+  const [showConfig, setShowConfig] = useState(false);
+  const [showCRM, setShowCRM] = useState(false);
+
   const [bookings, setBookings] = useState<Booking[]>(preset.initialBookings || []);
   const [orders, setOrders] = useState<Order[]>([]);
   const [inventory, setInventory] = useState<Product[]>(preset.inventory);
 
-  // Live Dólar Blue rate
   const [dolarBlue, setDolarBlue] = useState<DolarBlueRate>({
     compra: 1350,
     venta: 1400,
     fechaActualizacion: new Date().toISOString(),
   });
 
+  const isIphones = config.rubro === 'iphones';
+
   useEffect(() => {
+    if (!isIphones) return; // Only fetch for iPhone rubro
     const fetchDolar = async () => {
       try {
         const res = await fetch('https://dolarapi.com/v1/dolares/blue');
         if (res.ok) {
           const data = await res.json();
-          setDolarBlue({
-            compra: data.compra,
-            venta: data.venta,
-            fechaActualizacion: data.fechaActualizacion || new Date().toISOString(),
-          });
+          setDolarBlue({ compra: data.compra, venta: data.venta, fechaActualizacion: data.fechaActualizacion || new Date().toISOString() });
         }
-      } catch (err) {
-        console.error('Error fetching dollar rate:', err);
-      }
+      } catch { /* silent fallback */ }
     };
     fetchDolar();
-    const interval = setInterval(fetchDolar, 5 * 60 * 1000); // refresh every 5 min
+    const interval = setInterval(fetchDolar, 5 * 60 * 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isIphones]);
 
-  // Sync business name updates from config panel back to our config
-  const handleConfigChange = (newConfig: BusinessConfig) => {
-    setConfig(newConfig);
-  };
-
-  // State handlers
   const handleAddBooking = (newBooking: Omit<Booking, 'id' | 'createdAt' | 'status'>) => {
-    const booking: Booking = {
+    setBookings(prev => [{
       ...newBooking,
       id: `book-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       status: 'pending',
       createdAt: new Date(),
-    };
-    setBookings(prev => [booking, ...prev]);
+    }, ...prev]);
   };
 
   const handleAddOrder = (newOrder: Omit<Order, 'id' | 'createdAt' | 'status' | 'paymentStatus'>) => {
-    const paymentStatus: 'paid' | 'pending_payment' = 
-      newOrder.paymentMethod?.toLowerCase() === 'efectivo' || newOrder.paymentMethod?.toLowerCase() === 'transferencia'
-        ? 'pending_payment'
-        : 'paid';
-
-    const order: Order = {
+    const paymentStatus: 'paid' | 'pending_payment' =
+      ['efectivo', 'transferencia'].includes((newOrder.paymentMethod || '').toLowerCase())
+        ? 'pending_payment' : 'paid';
+    setOrders(prev => [{
       ...newOrder,
       id: `ord-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       status: 'confirmed',
       paymentStatus,
       createdAt: new Date(),
-    };
-    setOrders(prev => [order, ...prev]);
-
-    // Update inventory stock based on the order
-    setInventory(prevInventory => {
-      return prevInventory.map(prod => {
-        const orderItem = newOrder.items.find(item => item.productId === prod.id);
-        if (orderItem) {
-          const newStock = Math.max(0, prod.stock - orderItem.quantity);
-          return { ...prod, stock: newStock };
-        }
-        return prod;
-      });
-    });
-  };
-
-  const handleUpdateBookingStatus = (id: string, status: 'confirmed' | 'cancelled') => {
-    setBookings(prev =>
-      prev.map(b => (b.id === id ? { ...b, status } : b))
-    );
-  };
-
-  const handleUpdateOrderStatus = (id: string, status: 'delivered' | 'cancelled') => {
-    setOrders(prev =>
-      prev.map(o => (o.id === id ? { ...o, status } : o))
-    );
-  };
-
-  const handleUpdateOrderPayment = (id: string, paymentStatus: 'paid' | 'pending_payment') => {
-    setOrders(prev =>
-      prev.map(o => (o.id === id ? { ...o, paymentStatus } : o))
-    );
+    }, ...prev]);
+    setInventory(prev => prev.map(prod => {
+      const item = newOrder.items.find(i => i.productId === prod.id);
+      return item ? { ...prod, stock: Math.max(0, prod.stock - item.quantity) } : prod;
+    }));
   };
 
   const handleConfirmPayment = () => {
@@ -132,132 +93,76 @@ export default function DemoChatPage({ preset, businessName, onBack }: DemoChatP
     });
   };
 
-  const handleUpdateInventory = (updatedInventory: Product[]) => {
-    setInventory(updatedInventory);
-  };
-
   return (
-    <div className="flex flex-col h-screen relative overflow-hidden bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a]">
-      {/* Background decoration */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#00A884]/5 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-[#075E54]/5 rounded-full blur-3xl"></div>
-      </div>
+    <div className="flex flex-col h-screen-mobile bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] overflow-hidden">
 
-      {/* Header bar */}
-      <header className="relative z-10 flex items-center justify-between px-6 py-4 border-b border-white/5 bg-slate-950/20 backdrop-blur-md">
+      {/* ── Desktop Header ─────────────────────────────── */}
+      <header className="hidden md:flex items-center justify-between px-5 py-3 border-b border-white/5 bg-slate-950/30 backdrop-blur-md flex-shrink-0">
         <div className="flex items-center gap-3">
-          <button 
-            onClick={onBack}
-            className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/70 hover:text-white transition-all cursor-pointer"
-            title="Volver atrás"
-          >
-            ◀
-          </button>
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00A884] to-[#075E54] flex items-center justify-center shadow-lg">
-            <span className="text-xl">{preset.icon}</span>
-          </div>
+          <button onClick={onBack} title="Volver" className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60 hover:text-white transition-all cursor-pointer text-sm">◀</button>
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#00A884] to-[#075E54] flex items-center justify-center text-lg">{preset.icon}</div>
           <div>
-            <h1 className="text-white font-bold text-base leading-tight">
-              {config.businessName} <span className="text-xs font-normal text-white/40">({preset.rubroLabel})</span>
-            </h1>
-            <p className="text-[#00A884] text-xs font-medium flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              Agente IA de WhatsApp Activo
+            <p className="text-white font-bold text-sm leading-tight">{config.businessName}</p>
+            <p className="text-[#00A884] text-[10px] font-medium flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block" />
+              {preset.rubroLabel} · Agente IA activo
             </p>
           </div>
         </div>
 
-        {/* Dolar Blue Ticker Widget */}
-        <div className="hidden lg:flex items-center gap-3 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 text-xs text-white">
-          <span className="text-[#00A884] font-bold">💵 Dólar Blue:</span>
-          <span>Compra <strong className="text-white">${dolarBlue.compra}</strong></span>
-          <span className="text-white/20">|</span>
-          <span>Venta <strong className="text-white">${dolarBlue.venta}</strong></span>
-        </div>
+        {/* Dolar Blue — only for iPhones */}
+        {isIphones && (
+          <div className="hidden lg:flex items-center gap-2.5 bg-white/5 border border-white/10 rounded-full px-3 py-1.5 text-xs text-white">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-white/60">💵 Dólar Blue:</span>
+            <span>Compra <strong>${dolarBlue.compra}</strong></span>
+            <span className="text-white/20">|</span>
+            <span>Venta <strong>${dolarBlue.venta}</strong></span>
+          </div>
+        )}
 
-        {/* Buttons to toggle Config and CRM */}
         <div className="flex items-center gap-2">
-          {/* Config Panel Toggle */}
-          <button
-            onClick={() => setShowConfig(!showConfig)}
-            className={`hidden md:flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
-              showConfig
-                ? 'bg-[#00A884]/20 text-[#00A884] border-[#00A884]/40 hover:bg-[#00A884]/30'
-                : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10 hover:text-white'
-            }`}
-          >
-            <span>⚙️</span> {showConfig ? 'Ocultar Configuración' : 'Editar Configuración'}
+          <button onClick={() => setShowConfig(v => !v)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all cursor-pointer ${showConfig ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10'}`}>
+            ⚙️ {showConfig ? 'Ocultar' : 'Config'}
           </button>
-
-          {/* CRM Toggle */}
-          <button
-            onClick={() => setShowOwnerDashboard(!showOwnerDashboard)}
-            className={`hidden md:flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
-              showOwnerDashboard
-                ? 'bg-blue-600/20 text-blue-400 border-blue-500/40 hover:bg-blue-600/30'
-                : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10 hover:text-white'
-            }`}
-          >
-            <span>📊</span> {showOwnerDashboard ? 'Ocultar Panel CRM' : 'Ver Panel CRM'}
+          <button onClick={() => setShowCRM(v => !v)} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all cursor-pointer ${showCRM ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' : 'bg-white/5 text-white/60 border-white/10 hover:bg-white/10'}`}>
+            📊 {showCRM ? 'Ocultar CRM' : 'Ver CRM'}
           </button>
         </div>
       </header>
 
-      {/* Mobile Tab Toggles */}
-      <div className="flex md:hidden px-4 py-3 gap-2 bg-slate-900/30 border-b border-white/5 relative z-10">
-        <button
-          onClick={() => setActiveTab('chat')}
-          className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
-            activeTab === 'chat' ? 'bg-[#00A884] text-white shadow-lg' : 'bg-white/5 text-white/50'
-          }`}
-        >
-          💬 Chat
-        </button>
-        <button
-          onClick={() => setActiveTab('dashboard')}
-          className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
-            activeTab === 'dashboard' ? 'bg-blue-600 text-white shadow-lg' : 'bg-white/5 text-white/50'
-          }`}
-        >
-          📊 CRM
-        </button>
-        <button
-          onClick={() => setActiveTab('config')}
-          className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all ${
-            activeTab === 'config' ? 'bg-amber-600 text-white shadow-lg' : 'bg-white/5 text-white/50'
-          }`}
-        >
-          ⚙️ Config
-        </button>
-      </div>
+      {/* ── Mobile Header ─────────────────────────────── */}
+      <header className="flex md:hidden items-center gap-2.5 px-4 py-3 border-b border-white/5 bg-slate-950/50 backdrop-blur-md flex-shrink-0">
+        <button onClick={onBack} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-white/60 text-xs cursor-pointer">◀</button>
+        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00A884] to-[#075E54] flex items-center justify-center text-base">{preset.icon}</div>
+        <div className="flex-1 min-w-0">
+          <p className="text-white font-bold text-sm leading-tight truncate">{config.businessName}</p>
+          <p className="text-[#00A884] text-[10px] flex items-center gap-1">
+            <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse inline-block" />
+            Agente IA activo
+          </p>
+        </div>
+        {isIphones && (
+          <div className="flex-shrink-0 bg-white/5 border border-white/10 rounded-full px-2 py-1 text-[10px] text-white/70 font-medium">
+            💵 ${dolarBlue.venta}
+          </div>
+        )}
+      </header>
 
-      {/* Layout Columns */}
-      <div className="flex-1 flex gap-4 p-4 overflow-hidden relative z-10">
-        {/* Col 1: Config Panel (Left) */}
+      {/* ── Main Content Area ─────────────────────────── */}
+      <div className="flex-1 flex overflow-hidden min-h-0">
+
+        {/* Config panel — desktop left sidebar */}
         {showConfig && (
-          <div className="w-[300px] xl:w-[350px] flex-shrink-0 rounded-2xl border border-white/10 overflow-hidden flex flex-col animate-slide-in">
-            <ConfigPanel
-              onConfigChange={handleConfigChange}
-              onApiKeyChange={setApiKey}
-            />
-          </div>
-        )}
-        
-        {/* Mobile fallback for config */}
-        {activeTab === 'config' && (
-          <div className="flex-1 rounded-2xl border border-white/10 overflow-hidden flex flex-col md:hidden">
-            <ConfigPanel
-              onConfigChange={handleConfigChange}
-              onApiKeyChange={setApiKey}
-            />
+          <div className="hidden md:flex flex-col w-[300px] xl:w-[340px] flex-shrink-0 border-r border-white/5 overflow-hidden animate-slide-in">
+            <ConfigPanel onConfigChange={setConfig} onApiKeyChange={setApiKey} />
           </div>
         )}
 
-        {/* Col 2: Chat Simulator (Middle/Main) */}
-        <div className={`flex-1 min-w-0 ${activeTab !== 'chat' ? 'hidden md:flex md:flex-col' : 'flex flex-col'}`}>
-          <ChatSimulator 
-            config={config} 
+        {/* Chat — center / full on mobile */}
+        <div className={`flex-1 min-w-0 flex flex-col ${mobileView !== 'chat' ? 'hidden md:flex' : 'flex'}`}>
+          <ChatSimulator
+            config={config}
             apiKey={apiKey}
             bookings={bookings}
             orders={orders}
@@ -265,42 +170,76 @@ export default function DemoChatPage({ preset, businessName, onBack }: DemoChatP
             onAddBooking={handleAddBooking}
             onAddOrder={handleAddOrder}
             onConfirmPayment={handleConfirmPayment}
-            dolarBlue={dolarBlue}
+            dolarBlue={isIphones ? dolarBlue : undefined}
           />
         </div>
 
-        {/* Col 3: Owner Dashboard (Right) */}
-        {showOwnerDashboard && (
-          <div className="w-[380px] xl:w-[480px] flex-shrink-0 rounded-2xl border border-white/10 overflow-hidden flex flex-col animate-slide-in">
+        {/* CRM panel — desktop right sidebar */}
+        {showCRM && (
+          <div className="hidden md:flex flex-col w-[380px] xl:w-[460px] flex-shrink-0 border-l border-white/5 overflow-hidden animate-slide-in">
             <OwnerDashboard
               bookings={bookings}
               orders={orders}
               inventory={inventory}
-              onUpdateInventory={handleUpdateInventory}
-              onUpdateBookingStatus={handleUpdateBookingStatus}
-              onUpdateOrderStatus={handleUpdateOrderStatus}
-              onUpdateOrderPayment={handleUpdateOrderPayment}
-              dolarBlue={dolarBlue}
+              rubro={config.rubro}
+              onUpdateInventory={setInventory}
+              onUpdateBookingStatus={(id, status) => setBookings(prev => prev.map(b => b.id === id ? { ...b, status } : b))}
+              onUpdateOrderStatus={(id, status) => setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o))}
+              onUpdateOrderPayment={(id, ps) => setOrders(prev => prev.map(o => o.id === id ? { ...o, paymentStatus: ps } : o))}
+              dolarBlue={isIphones ? dolarBlue : undefined}
             />
           </div>
         )}
 
-        {/* Mobile fallback for dashboard */}
-        {activeTab === 'dashboard' && (
-          <div className="flex-1 rounded-2xl border border-white/10 overflow-hidden flex flex-col md:hidden">
+        {/* Mobile: CRM view */}
+        {mobileView === 'crm' && (
+          <div className="flex md:hidden flex-col flex-1 overflow-hidden">
             <OwnerDashboard
               bookings={bookings}
               orders={orders}
               inventory={inventory}
-              onUpdateInventory={handleUpdateInventory}
-              onUpdateBookingStatus={handleUpdateBookingStatus}
-              onUpdateOrderStatus={handleUpdateOrderStatus}
-              onUpdateOrderPayment={handleUpdateOrderPayment}
-              dolarBlue={dolarBlue}
+              rubro={config.rubro}
+              onUpdateInventory={setInventory}
+              onUpdateBookingStatus={(id, status) => setBookings(prev => prev.map(b => b.id === id ? { ...b, status } : b))}
+              onUpdateOrderStatus={(id, status) => setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o))}
+              onUpdateOrderPayment={(id, ps) => setOrders(prev => prev.map(o => o.id === id ? { ...o, paymentStatus: ps } : o))}
+              dolarBlue={isIphones ? dolarBlue : undefined}
             />
           </div>
         )}
+
+        {/* Mobile: Config view */}
+        {mobileView === 'config' && (
+          <div className="flex md:hidden flex-col flex-1 overflow-hidden">
+            <ConfigPanel onConfigChange={setConfig} onApiKeyChange={setApiKey} />
+          </div>
+        )}
       </div>
+
+      {/* ── Mobile Bottom Tab Bar ─────────────────────── */}
+      <nav className="flex md:hidden items-center border-t border-white/5 bg-slate-950/80 backdrop-blur-md flex-shrink-0 pb-safe">
+        {[
+          { id: 'chat', label: 'Chat', icon: '💬' },
+          { id: 'crm',  label: 'Panel',  icon: '📊' },
+          { id: 'config', label: 'Config', icon: '⚙️' },
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setMobileView(tab.id as MobileView)}
+            className={`flex-1 py-3.5 flex flex-col items-center gap-0.5 transition-all cursor-pointer ${
+              mobileView === tab.id
+                ? 'text-[#00A884]'
+                : 'text-white/35 hover:text-white/60'
+            }`}
+          >
+            <span className="text-lg leading-none">{tab.icon}</span>
+            <span className="text-[10px] font-semibold leading-none">{tab.label}</span>
+            {mobileView === tab.id && (
+              <span className="w-5 h-0.5 bg-[#00A884] rounded-full mt-0.5" />
+            )}
+          </button>
+        ))}
+      </nav>
     </div>
   );
 }

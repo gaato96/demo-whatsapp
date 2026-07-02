@@ -7,6 +7,7 @@ interface OwnerDashboardProps {
   bookings: Booking[];
   orders: Order[];
   inventory: Product[];
+  rubro?: string;
   onUpdateInventory: (updatedInventory: Product[]) => void;
   onUpdateBookingStatus: (id: string, status: 'confirmed' | 'cancelled') => void;
   onUpdateOrderStatus: (id: string, status: 'delivered' | 'cancelled') => void;
@@ -18,12 +19,14 @@ export default function OwnerDashboard({
   bookings,
   orders,
   inventory,
+  rubro,
   onUpdateInventory,
   onUpdateBookingStatus,
   onUpdateOrderStatus,
   onUpdateOrderPayment,
   dolarBlue,
 }: OwnerDashboardProps) {
+  const isIphones = rubro === 'iphones';
   const [activeTab, setActiveTab] = useState<'bookings' | 'orders' | 'inventory'>('bookings');
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
   
@@ -534,6 +537,7 @@ export default function OwnerDashboard({
                       className="w-full bg-slate-950 border border-white/10 rounded px-2.5 py-1.5 text-white outline-none focus:border-[#8B5CF6]"
                     />
                   </div>
+                  {isIphones && (
                   <div>
                     <label className="block text-white/50 mb-1">Moneda</label>
                     <select
@@ -545,6 +549,7 @@ export default function OwnerDashboard({
                       <option value="ARS">Pesos (ARS)</option>
                     </select>
                   </div>
+                  )}
                 </div>
 
                 {/* iPhone specific fields */}
@@ -629,7 +634,7 @@ export default function OwnerDashboard({
             )}
 
             <p className="text-xs text-white/50 leading-relaxed">
-              💡 <strong>Demo Sincronizada:</strong> Modifica el precio o el stock de cualquier producto aquí debajo. La IA de Gemini leerá estos cambios en tiempo real y responderá con los nuevos valores en el chat de WhatsApp.
+              💡 <strong>Demo Sincronizada:</strong> Modifica el precio o el stock de cualquier producto aquí debajo. El Agente de IA leerá estos cambios en tiempo real y responderá con los nuevos valores en el chat de WhatsApp.
             </p>
 
             <div className="space-y-3">
@@ -664,11 +669,14 @@ export default function OwnerDashboard({
                       {editingProductId !== product.id && (
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
                           <span className="text-xs font-bold text-[#10B981]">
-                            {product.currency === 'USD' ? `$${product.price} USD` : `$${product.price.toLocaleString('es-AR')} ARS`}
+                            {isIphones && product.currency === 'USD'
+                              ? `$${product.price} USD`
+                              : `$${product.price.toLocaleString('es-AR')}`
+                            }
                           </span>
-                          {product.currency === 'USD' && (
+                          {isIphones && product.currency === 'USD' && dolarBlue && (
                             <span className="text-[10px] text-white/40">
-                              (~${(product.price * usdToArsRate).toLocaleString('es-AR')} ARS)
+                              (~${(product.price * dolarBlue.venta).toLocaleString('es-AR')} ARS)
                             </span>
                           )}
                           <span className="text-white/20">•</span>
@@ -690,6 +698,7 @@ export default function OwnerDashboard({
                             className="w-full bg-slate-950 border border-white/10 rounded px-1 py-0.5 text-xs text-white outline-none focus:border-[#8B5CF6]"
                           />
                         </div>
+                        {isIphones && (
                         <div className="w-12">
                           <label className="block text-white/40 uppercase mb-0.5 text-[8px]">Moneda</label>
                           <select
@@ -701,6 +710,7 @@ export default function OwnerDashboard({
                             <option value="ARS">ARS</option>
                           </select>
                         </div>
+                        )}
                         <div className="w-10">
                           <label className="block text-white/40 uppercase mb-0.5 text-[8px]">Stock</label>
                           <input
