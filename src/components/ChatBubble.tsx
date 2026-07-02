@@ -68,11 +68,15 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
             : 'bg-white rounded-bl-none chat-bubble-incoming'
         }`}
       >
-        {/* User uploaded image container */}
-        {message.imageUrl && (
+        {/* Native WhatsApp Media Header (Image with caption style) */}
+        {(message.imageUrl || (!isUser && message.attachedProduct)) && (
           <div className="w-full max-w-[280px] aspect-[4/3] bg-slate-900 overflow-hidden border-b border-black/5 relative">
-            <img src={message.imageUrl} alt="Attached Visual" className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-black/10"></div>
+            <img 
+              src={message.imageUrl || message.attachedProduct?.imageUrl} 
+              alt="Media" 
+              className="w-full h-full object-cover" 
+            />
+            <div className="absolute inset-0 bg-black/5"></div>
           </div>
         )}
 
@@ -100,39 +104,6 @@ export default function ChatBubble({ message }: ChatBubbleProps) {
           </span>
         </div>
       </div>
-
-      {/* Bot response attached Interactive Product Card */}
-      {!isUser && message.attachedProduct && (
-        <div className="mt-1.5 ml-[5%] bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden w-64 animate-fade-in text-sm text-[#111B21]">
-          <div className="w-full aspect-[4/3] bg-slate-900 overflow-hidden relative">
-            <img 
-              src={message.attachedProduct.imageUrl} 
-              alt={message.attachedProduct.name} 
-              className="w-full h-full object-cover" 
-            />
-            <div className="absolute top-2 right-2 bg-[#10B981] text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">
-              En Stock
-            </div>
-          </div>
-          <div className="p-3.5 space-y-2">
-            <div>
-              <h4 className="font-bold text-[#111B21] text-sm truncate">{message.attachedProduct.name}</h4>
-              <span className="text-xs text-white/10 bg-slate-900 border border-slate-200/5 px-2 py-0.5 rounded text-[10px] inline-block font-semibold mt-1">
-                Talles: {message.attachedProduct.sizes.join(', ')}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-base font-extrabold text-[#10B981]">
-                ${message.attachedProduct.price.toLocaleString('es-AR')}
-              </span>
-              <span className="text-[10px] text-[#667781]">Stock: {message.attachedProduct.stock} u</span>
-            </div>
-            <button className="w-full bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm mt-1">
-              <span>🛒</span> Comprar por WhatsApp
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

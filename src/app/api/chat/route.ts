@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
     let responseText = '';
     let lastError: any = null;
     const maxRetries = 3;
-    const modelTiers = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash-lite', 'gemini-2.0-flash-lite'];
+    const modelTiers = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.0-flash', 'gemini-2.5-flash'];
     const delayMs = [0, 2000, 3000, 4000];
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
