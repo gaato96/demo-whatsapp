@@ -14,10 +14,40 @@ interface DemoChatPageProps {
 }
 
 export default function DemoChatPage({ preset, businessName, onBack }: DemoChatPageProps) {
-  const [config, setConfig] = useState<BusinessConfig>({
-    ...preset.config,
-    businessName: businessName,
-  });
+  // Helper to replace default business name occurrences in config fields
+  const customizeConfig = (baseConfig: BusinessConfig, defaultName: string, newName: string): BusinessConfig => {
+    if (!newName || newName.trim() === '') return { ...baseConfig, businessName: defaultName };
+
+    const nameToUse = newName.trim();
+    const updated = { ...baseConfig, businessName: nameToUse };
+    
+    const replaceName = (str: string) => {
+      // Replace all occurrences of the default name with the new custom name
+      return str.replaceAll(defaultName, nameToUse);
+    };
+
+    if (updated.welcomeMessage) updated.welcomeMessage = replaceName(updated.welcomeMessage);
+    if (updated.faq) updated.faq = replaceName(updated.faq);
+    if (updated.botPersonality) updated.botPersonality = replaceName(updated.botPersonality);
+    if (updated.socialMedia) updated.socialMedia = replaceName(updated.socialMedia);
+    if (updated.contactEmail) updated.contactEmail = replaceName(updated.contactEmail);
+
+    if (updated.rubroFields) {
+      const updatedFields = { ...updated.rubroFields };
+      for (const key in updatedFields) {
+        if (typeof updatedFields[key] === 'string') {
+          updatedFields[key] = replaceName(updatedFields[key]);
+        }
+      }
+      updated.rubroFields = updatedFields;
+    }
+
+    return updated;
+  };
+
+  const [config, setConfig] = useState<BusinessConfig>(() =>
+    customizeConfig(preset.config, preset.defaultName, businessName)
+  );
 
   const [apiKey, setApiKey] = useState('');
 
