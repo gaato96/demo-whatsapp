@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, KeyboardEvent, useRef, useEffect } from 'react';
+import { useState, KeyboardEvent, useRef, useEffect, useCallback } from 'react';
 import { MOCK_SHOE_IMAGES, MOCK_SHOE_BASE64, TRANSFER_RECEIPT } from '@/lib/constants';
 
 interface ChatInputProps {
@@ -16,11 +16,19 @@ export default function ChatInput({ onSendMessage, onSendAudio, onSendImage, dis
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<number>(0);
+
+  // Auto-focus the textarea when bot finishes typing (disabled transitions false)
+  useEffect(() => {
+    if (!disabled && !isRecording) {
+      textareaRef.current?.focus();
+    }
+  }, [disabled, isRecording]);
 
   const handleSend = () => {
     const trimmed = text.trim();
@@ -278,12 +286,14 @@ export default function ChatInput({ onSendMessage, onSendAudio, onSendImage, dis
       {/* Text input */}
       <div className="flex-1">
         <textarea
+          ref={textareaRef}
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Escribe un mensaje"
           disabled={disabled}
           rows={1}
+          autoFocus
           className="w-full bg-white rounded-lg border-none px-3 py-[9px] text-[15px] text-[#111B21] placeholder-[#667781] outline-none resize-none max-h-[100px] leading-[20px] disabled:opacity-50"
           style={{ minHeight: '40px' }}
         />

@@ -21,7 +21,7 @@ export default function DemosDashboard() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] py-12 px-6 relative overflow-hidden">
+    <main className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#1e293b] to-[#0f172a] py-12 px-6 relative overflow-y-auto" style={{ height: '100dvh' }}>
       {/* Background blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-[#00A884]/5 rounded-full blur-[120px]"></div>
